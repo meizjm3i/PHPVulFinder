@@ -1,0 +1,28 @@
+$a = "2";
+
+switch($a){
+    case '1':
+        $b = "123";
+        break;
+    case '2':
+        $c = "456";
+        break;
+    default:
+        $d = "789";
+        break;
+}
+
+$e = "111";
+
+
+0 ("ASSIGN",null,'2',a)
+1 ("JUMP",a,'1',4)
+2 ("JUMP",a,'2',6)
+3 ("JUMP",a, a ,)
+4 ("ASSIGN",b,'123',5)
+5 ("BREAK",null,null,10)
+6 ("ASSIGN",c,'456',7)
+7 ("BREAK",null,null,10)
+8 ("ASSIGN",d,'789',9)
+9 ("BREAK",null,null,10)
+10 ("ASSIGN",e,'111',null)
