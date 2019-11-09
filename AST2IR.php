@@ -39,9 +39,7 @@ class AST2IR{
         }
         //$this->generateQuad($nodes);
         $this->quadId += 1;
-        $quad = new Quad($this->quadId);
-
-        $this->quads[$this->quadId] = $quad;
+        $this->quads[$this->quadId] = new Quad(0,$this->quadId);
         $this->test($nodes,null);
 
         $blockDivide = new BlockDivide();
@@ -89,6 +87,8 @@ class AST2IR{
         switch ($type){
             case 'Stmt_If':
                 // 处理 if-elseif-else语句中的条件，跳转关系使用四元组存储
+
+//                var_dump()
                 $this->conditonParse($node);
                 break;
             case 'Stmt_Switch':
@@ -107,7 +107,7 @@ class AST2IR{
 
                 break;
         }
-//        var_dump($this->quads);
+        var_dump($this->quads);
 
     }
     /*
@@ -138,10 +138,7 @@ class AST2IR{
         $this->quadId += 1;
         $id = $this->quadId;
 
-        $this->quads[$id] = new Quad($id);
-        $this->quads[$id]->set_op("JUMP");
-        $this->quads[$id]->set_arg1($this->quads[$if_pos]->result);
-        $this->quads[$id]->set_arg2(0);
+        $this->quads[$id] = new Quad(0,$id,"JUMP",$this->quads[$if_pos]->result,0);
         if($node->stmts != null){
             $this->test($node->stmts,null);
         }
@@ -154,10 +151,7 @@ class AST2IR{
             }
             $this->quadId += 1;
             $id = $this->quadId ;
-            $this->quads[$id] = new Quad($id);
-            $this->quads[$id]->set_op("JUMP");
-            $this->quads[$id]->set_arg1($this->quads[$if_pos]->result);
-            $this->quads[$id]->set_arg2(0);
+            $this->quads[$id] = new Quad(1,$id,"JUMP",$this->quads[$if_pos]->result,0);
             array_push($elseif_pos_arr,$this->quadId);
             if($elseifs[$i]->stmts != null){
                 $this->test($elseifs[$i]->stmts,null);
@@ -176,37 +170,103 @@ class AST2IR{
 
 
     }
-
-    public function ExprParse($expr,$debug){
+    /*
+     *
+     *
+     * Notice：为了兼容后面的逻辑，条件判断时尽量使用elseif，避免else的使用
+     */
+    public function ExprParse($expr,$debug=0){
         if($debug == 1){
             var_dump($expr);
         }
-        if($expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanAnd || $expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanOr){
-            $this->ExprParse($expr->left,0);
-            $this->ExprParse($expr->right,0);
-        }
-        if($expr instanceof PhpParser\Node\Expr\BinaryOp){
-            $this->quadId += 1;
-            $id = $this->quadId ;
-            $this->quads[$id] = new Quad($id);
-            $this->quads[$id]->set_label(0);
-            $expr->setAttribute("quad_id",$id);
+        if($expr instanceof  PhpParser\Node\Expr\BinaryOp\BooleanAnd || $expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanOr){
+            /*
+             * 布尔运算符 && 以及 || 的处理，目前仅考虑常见的两种情况:
+             * 1. 某一边存在多重运算
+             * 2. 两边都为常数
+             */
+//            var_dump($expr);
+            if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+                /*
+                 * 布尔运算符的两边至少一边有二进制操作，比如 2 && (3==1)
+                 */
+                if($expr->left instanceof PhpParser\Node\Expr\BinaryOp && $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+                    $this->ExprParse($expr->left);
+                    $left_id = $this->quadId;
+                    $this->ExprParse($expr->right);
+                    $right_id = $this->quadId;
 
-            if($expr->left instanceof PhpParser\Node\Expr\BinaryOp ){
-                $attr = $expr->left->getAttributes();
-                $this->quads[$id]->set_arg1($attr['quad_id']);
-            }else{
-                $this->quads[$id]->set_arg1($expr->left);
+                    $this->quadId += 1;
+                    $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$left_id,$right_id,"temp_$this->quadId");
+                }elseif ($expr->left instanceof PhpParser\Node\Expr\BinaryOp){
+                    $this->ExprParse($expr->left);
+                    $left_id = $this->quadId;
+                    if($expr->right instanceof PhpParser\Node\Scalar){
+                        $this->quadId += 1;
+                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$left_id,$expr->right,"temp_$this->quadId");
+                    }
+                }elseif ($expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+
+                    $this->ExprParse($expr->right);
+                    $right_id = $this->quadId;
+                    if($expr->left instanceof PhpParser\Node\Scalar){
+                        $this->quadId += 1;
+                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$right_id,$expr->left,"temp_$this->quadId");
+                    }
+                }
+            }elseif ($expr->left instanceof PhpParser\Node\Scalar || $expr->right instanceof PhpParser\Node\Scalar){
+                /*
+                 * 布尔运算符的两边都为常数，比如    2 && 3
+                 */
+                if($expr->left instanceof PhpParser\Node\Scalar && $expr->right instanceof PhpParser\Node\Scalar){
+                    $this->quadId += 1;
+                    $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->left,$expr->right,"temp_$this->quadId");
+                }
             }
-            if($expr->right instanceof PhpParser\Node\Expr\BinaryOp ){
-                $attr = $expr->right->getAttributes();
-                $this->quads[$id]->set_arg2($attr['quad_id']);
-            }else{
-                $this->quads[$id]->set_arg2($expr->right);
-            }
-            $this->quads[$id]->set_op($expr->getOperatorSigil());
-            $this->quads[$id]->set_result("temp_$id" );
         }
+        if($expr instanceof PhpParser\Node\Expr\BinaryOp\Equal){
+            /*
+             * 等于操作的处理，目前仅考虑两种情况：
+             * 1. 某一边存在多重运算
+             * 2. 两边都为常量
+             */
+            if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+                if($expr->left instanceof PhpParser\Node\Expr\BinaryOp && $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+                    $this->ExprParse($expr->left);
+                    $left_id = $this->quadId;
+                    $this->ExprParse($expr->right);
+                    $right_id = $this->quadId;
+                }elseif ($expr->left instanceof PhpParser\Node\Expr\BinaryOp){
+                    $this->ExprParse($expr->left);
+                    $left_id = $this->quadId;
+                    if($expr->right instanceof PhpParser\Node\Scalar){
+                        $this->quadId += 1;
+                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$left_id,$expr->right,"temp_$this->quadId");
+                    }
+                }elseif ($expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+
+                    $this->ExprParse($expr->right);
+                    $right_id = $this->quadId;
+                    if($expr->left instanceof PhpParser\Node\Scalar){
+                        $this->quadId += 1;
+                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$right_id,$expr->left,"temp_$this->quadId");
+                    }
+                }
+            }elseif ($expr->left instanceof PhpParser\Node\Scalar || $expr->right instanceof PhpParser\Node\Scalar){
+                if($expr->left instanceof PhpParser\Node\Scalar && $expr->right instanceof PhpParser\Node\Scalar){
+                    $this->quadId += 1;
+                    $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType());
+                    if($expr->left instanceof PhpParser\Node\Scalar){
+                        $this->quads[$this->quadId]->set_arg1($expr->left);
+                    }
+                    if($expr->right instanceof PhpParser\Node\Scalar){
+                        $this->quads[$this->quadId]->set_arg2($expr->right);
+                    }
+                    $this->quads[$this->quadId]->set_result("temp_$this->quadId");
+                }
+            }
+        }
+
         if($expr instanceof PhpParser\Node\Stmt\Expression){
             $expression = $expr->expr;
             if($expression instanceof PhpParser\Node\Expr\Assign){
@@ -218,12 +278,8 @@ class AST2IR{
                 }
                 $this->quadId += 1;
                 $id = $this->quadId ;
-                $this->quads[$id] = new Quad($id);
-                $this->quads[$id]->set_label(0);
-                $this->quads[$id]->set_op($expression->getType());
-                $this->quads[$id]->set_arg1($expression->expr);
-                $this->quads[$id]->set_arg2(null);
-                $this->quads[$id]->set_result($expression->var);
+
+                $this->quads[$id] = new Quad(0,$id,$expression->getType(),$expression->expr,null,$expression->var);
             }
         }
         if($expr instanceof PhpParser\Node\Expr\Assign){
@@ -238,9 +294,9 @@ class AST2IR{
                  * 生成一个四元组，对于expr是常量的情况，直接进行ASSIGN四元组的生成
                  *
                  */
-
-                
-
+                $this->quadId += 1;
+                $id = $this->quadId ;
+                $this->quads[$id] = new Quad(0,$id,$expr->getType(),null,$expr->expr,$expr->var);
 
             }elseif($expr->expr instanceof PhpParser\Node\Expr){
                 $this->ExprParse($expr->expr,0);
@@ -249,27 +305,15 @@ class AST2IR{
                 if($expr->var instanceof PhpParser\Node\Expr\Variable){
                     $this->quadId += 1;
                     $id = $this->quadId ;
-                    $this->quads[$id] = new Quad($id);
-                    $this->quads[$id]->set_label(0);
-                    $this->quads[$id]->set_op($expr->getType());
-                    $this->quads[$id]->set_arg1(null);
-                    $this->quads[$id]->set_arg2($now_id);
-                    $this->quads[$id]->set_result($expr->var);
+                    $this->quads[$id] = new Quad(0,$id,$expr->getType(),null,$now_id,$expr->var);
                 }
             }
-
-
-
-
-
-
         }
 
-        if($expr instanceof PhpParser\Node\Expr\Variable){
-
-        }
 
     }
+
+
 
 
 
@@ -282,21 +326,60 @@ class AST2IR{
         return ((($leftDepth > $rightDepth) ? $leftDepth : $rightDepth) + 1);
     }
 
+    /*
+     * 将 Switch-Case-Default 语句的AST转换为四元组
+     *
+     * 分为三个部分:
+     *  1. Switch解析
+     *  2. Case解析
+     *  3. Default解析
+     *
+     * Switch解析本质上是个值判断，无论中间表达式的复杂性，最终都可以将值统一在一个临时变量上
+     *
+     * 首先将Switch语句转换为四元组，随后根据case条件的个数生成连续的JUMP四元组，其中跳转条件需要等待回填
+     *
+     * case处理时注意提取case的条件以及每个case对应stmt的开始标号
+     *
+     * default语句其实就是值恒为真的case
+     *
+     * Notice: 注意break、Continue、Continue 2导致的跳转情况
+     */
+
     public function parseSwitch($node){
-//        var_dump($node);
         $cases_count = count($node->cases);
-        var_dump($node->cond);
         if($node->cond instanceof PhpParser\Node\Expr){
             $this->ExprParse($node->cond,0);
         }
-
+        $now_id = $this->quadId;
         $JUMP_ID = array();
         for($i = 0;$i<$cases_count;$i++){
             $this->quadId += 1;
-            $this->quads[$this->quadId] = new Quad($this->quadId);
-            $this->quads[$this->quadId]->set_op("JUMP");
             $JUMP_ID[$i] = $this->quadId;
+            $this->quads[$this->quadId] = new Quad(1,$this->quadId,"JUMP",$this->quads[$now_id]->result);
+            /*
+             * arg2 与 result 需要在解析完case后再进行回填
+             */
         }
+        /*
+         * 开始处理 cases
+         * cases是一个数组，里面存放是各个case，使用foreach处理
+         */
+
+//        var_dump($node->cases);
+        foreach ($node->cases as $case) {
+
+            $this->parseCase($case);
+
+        }
+
+    }
+
+    public function parseCase($case){
+//        var_dump($this->quadId);
+//        var_dump($case);
+        $this->ExprParse($case->cond,0);
+
+//        var_dump($this->quads);
     }
 
     public function parseTryCatch(){
@@ -328,9 +411,22 @@ class Quad{
     public $arg2; // 左操作数
     public $result; // 结果
 
-    public function __construct($id){
+//    public function __construct($id){
+//        $this->id = $id;
+//    }
+
+
+
+    public function __construct( $label = 0 , $id ,$op = null , $arg1 = null , $arg2 = null , $result = null){
         $this->id = $id;
+        $this->label = $label;
+        $this->op  = $op;
+        $this->arg1 = $arg1;
+        $this->arg2 = $arg2;
+        $this->result = $result;
     }
+
+
 
     /*
      * set_op : set operation
