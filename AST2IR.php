@@ -179,14 +179,18 @@ class AST2IR{
         if($debug == 1){
             var_dump($expr);
         }
-        if($expr instanceof  PhpParser\Node\Expr\BinaryOp\BooleanAnd || $expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanOr){
+        if($expr instanceof  PhpParser\Node\Expr\BinaryOp\BooleanAnd ||
+            $expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanOr ||
+            $expr instanceof PhpParser\Node\Expr\BinaryOp\Equal ||
+            $expr instanceof PhpParser\Node\Expr\BinaryOp\Concat
+        ){
             /*
-             * 布尔运算符 && 以及 || 的处理，目前仅考虑常见的两种情况:
+             * 布尔运算符 && 、 || 、 == 、Concat 的处理，目前仅考虑常见的两种情况:
              * 1. 某一边存在多重运算
              * 2. 两边都为常数
              */
 //            var_dump($expr);
-            if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
+            if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp ){
                 /*
                  * 布尔运算符的两边至少一边有二进制操作，比如 2 && (3==1)
                  */
@@ -195,7 +199,6 @@ class AST2IR{
                     $left_id = $this->quadId;
                     $this->ExprParse($expr->right);
                     $right_id = $this->quadId;
-
                     $this->quadId += 1;
                     $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$left_id,$right_id,"temp_$this->quadId");
                 }elseif ($expr->left instanceof PhpParser\Node\Expr\BinaryOp){
@@ -215,54 +218,10 @@ class AST2IR{
                     }
                 }
             }elseif ($expr->left instanceof PhpParser\Node\Scalar || $expr->right instanceof PhpParser\Node\Scalar){
-                /*
-                 * 布尔运算符的两边都为常数，比如    2 && 3
-                 */
+
                 if($expr->left instanceof PhpParser\Node\Scalar && $expr->right instanceof PhpParser\Node\Scalar){
                     $this->quadId += 1;
                     $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->left,$expr->right,"temp_$this->quadId");
-                }
-            }
-        }
-        if($expr instanceof PhpParser\Node\Expr\BinaryOp\Equal){
-            /*
-             * 等于操作的处理，目前仅考虑两种情况：
-             * 1. 某一边存在多重运算
-             * 2. 两边都为常量
-             */
-            if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
-                if($expr->left instanceof PhpParser\Node\Expr\BinaryOp && $expr->right instanceof PhpParser\Node\Expr\BinaryOp){
-                    $this->ExprParse($expr->left);
-                    $left_id = $this->quadId;
-                    $this->ExprParse($expr->right);
-                    $right_id = $this->quadId;
-                }elseif ($expr->left instanceof PhpParser\Node\Expr\BinaryOp){
-                    $this->ExprParse($expr->left);
-                    $left_id = $this->quadId;
-                    if($expr->right instanceof PhpParser\Node\Scalar){
-                        $this->quadId += 1;
-                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$left_id,$expr->right,"temp_$this->quadId");
-                    }
-                }elseif ($expr->right instanceof PhpParser\Node\Expr\BinaryOp){
-
-                    $this->ExprParse($expr->right);
-                    $right_id = $this->quadId;
-                    if($expr->left instanceof PhpParser\Node\Scalar){
-                        $this->quadId += 1;
-                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$right_id,$expr->left,"temp_$this->quadId");
-                    }
-                }
-            }elseif ($expr->left instanceof PhpParser\Node\Scalar || $expr->right instanceof PhpParser\Node\Scalar){
-                if($expr->left instanceof PhpParser\Node\Scalar && $expr->right instanceof PhpParser\Node\Scalar){
-                    $this->quadId += 1;
-                    $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType());
-                    if($expr->left instanceof PhpParser\Node\Scalar){
-                        $this->quads[$this->quadId]->set_arg1($expr->left);
-                    }
-                    if($expr->right instanceof PhpParser\Node\Scalar){
-                        $this->quads[$this->quadId]->set_arg2($expr->right);
-                    }
-                    $this->quads[$this->quadId]->set_result("temp_$this->quadId");
                 }
             }
         }
