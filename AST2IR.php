@@ -41,7 +41,7 @@ class AST2IR{
         $this->quadId += 1;
         $this->quads[$this->quadId] = new Quad(0,$this->quadId);
         $this->test($nodes,null);
-        $this->var_debug($this->quads);
+//        $this->var_debug($this->quads);
         $blockDivide = new BlockDivide();
 
 
@@ -60,24 +60,22 @@ class AST2IR{
         }
 
         foreach ($nodes as $node){
-            //JUMP
+
             if(in_array($node->getType(),$JUMP_STATEMENT)){
-//                $this->var_debug($node);
+
                 $this->getBranches($node);
-                // Return
+
             }elseif (in_array($node->getType(),$RETURN_STATEMENT)){
 
 
-
-                // Loop
             }elseif(in_array($node->getType(),$LOOP_STATEMENT)){
-                $this->StmtParse($node);
+                $this->addLoop($node);
 
-                // Stop
             }elseif (in_array($node->getType(),$STOP_STATEMENT)){
 
 
             }else{
+                $this->var_debug($node);
 
                 if($node instanceof PhpParser\Node\Stmt){
                     $this->StmtParse($node);
@@ -88,7 +86,7 @@ class AST2IR{
     public function addLoop($node){
         switch ($node->getType()){
             case 'Stmt_For':  //for(i=0;i<3;i++) ===> extract var i
-
+                $this->StmtParse($node);
                 break ;
             case 'Stmt_While':  //while(cond) ====> extract cond
 
@@ -273,7 +271,7 @@ class AST2IR{
 
                 if($expr->var instanceof PhpParser\Node\Expr\Variable){
                     $this->quadId += 1;
-                    $id = $this->quadId ;
+                    $id = $this->quadId;
                     $this->quads[$id] = new Quad(0,$id,$expr->getType(),null,$now_id,$expr->var);
                 }
             }
@@ -285,6 +283,21 @@ class AST2IR{
         ){
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,null,null);
+        }
+
+        if($expr instanceof PhpParser\Node\Expr\FuncCall){
+            $param_count = count($expr->args);
+            for($i=0;$i<$param_count;$i++){
+                $this->quadId += 1;
+                $this->quads[$this->quadId] = new Quad(0,$this->quadId,"PARAM_$i",null,null,$expr->args[$i]);
+            }
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(1,$this->quadId,$expr->getType(),$expr->name,$param_count,null);
+        }
+
+        if($expr instanceof PhpParser\Node\Expr\ArrayDimFetch){
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,$expr->dim,"temp_$this->quadId");
         }
 
     }
@@ -480,6 +493,7 @@ class Quad{
      * Quad : 四元组
      *
      * ("JUMP",arg1,arg2,result)   如果arg1和arg2相等，则跳转到result标号对应的quad
+     * ("Expr_FuncCall",arg1,arg2,result)   arg1为函数名，arg2为字段数量，在FuncCall四元组上方是连续的字段四元组，arg2限定读取的字段的数量
      * ("ASSIGN",null,arg2,result)  将arg2的值赋值给result
      *
      */
@@ -490,12 +504,6 @@ class Quad{
     public $arg2; // 左操作数
     public $result; // 结果
 
-//    public function __construct($id){
-//        $this->id = $id;
-//    }
-
-
-
     public function __construct( $label = 0 , $id ,$op = null , $arg1 = null , $arg2 = null , $result = null){
         $this->id = $id;
         $this->label = $label;
@@ -504,8 +512,6 @@ class Quad{
         $this->arg2 = $arg2;
         $this->result = $result;
     }
-
-
 
     /*
      * set_op : set operation
