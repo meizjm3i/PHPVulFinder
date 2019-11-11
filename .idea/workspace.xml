@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0419645c-21b8-4603-badb-7f84bff0bd33" name="Default" comment="">
+      <change beforePath="" afterPath="$PROJECT_DIR$/tests/for_test.php" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/AST2IR.php" afterPath="$PROJECT_DIR$/AST2IR.php" />
-      <change beforePath="$PROJECT_DIR$/global.php" afterPath="$PROJECT_DIR$/global.php" />
-      <change beforePath="$PROJECT_DIR$/main.php" afterPath="$PROJECT_DIR$/main.php" />
-      <change beforePath="$PROJECT_DIR$/tests/switch_test.php" afterPath="$PROJECT_DIR$/tests/switch_test.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,11 +18,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AST2IR.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="AST2IR.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AST2IR.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="108" column="9" lean-forward="false" selection-start-line="108" selection-start-column="9" selection-end-line="108" selection-end-column="9" />
+            <state relative-caret-position="521">
+              <caret line="425" column="0" lean-forward="true" selection-start-line="425" selection-start-column="0" selection-end-line="425" selection-end-column="0" />
+              <folding>
+                <element signature="e#4994#5049#0#PHP" expanded="false" />
+                <element signature="e#5059#7777#0#PHP" expanded="false" />
+                <element signature="e#7788#8818#0#PHP" expanded="false" />
+                <element signature="e#8829#9096#0#PHP" expanded="false" />
+                <element signature="n#parseSwitch#0;n#AST2IR#0;n#!!top" expanded="false" />
+                <element signature="e#11437#11574#0#PHP" expanded="false" />
+                <element signature="e#11583#11689#0#PHP" expanded="false" />
+                <element signature="e#11698#11960#0#PHP" expanded="false" />
+                <element signature="e#11970#12168#0#PHP" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="for_test.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/for_test.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="50">
+              <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -80,11 +98,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="switch_test.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="switch_test.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/switch_test.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="325">
-              <caret line="13" column="14" lean-forward="true" selection-start-line="13" selection-start-column="14" selection-end-line="13" selection-end-column="14" />
+            <state relative-caret-position="475">
+              <caret line="19" column="13" lean-forward="true" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -128,6 +146,7 @@
       <find>label</find>
       <find>$this-&gt;quadId</find>
       <find>var_debug</find>
+      <find>calcCondDepth</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -159,6 +178,7 @@
         <option value="$PROJECT_DIR$/global.php" />
         <option value="$PROJECT_DIR$/main.php" />
         <option value="$PROJECT_DIR$/tests/switch_test.php" />
+        <option value="$PROJECT_DIR$/tests/for_test.php" />
         <option value="$PROJECT_DIR$/AST2IR.php" />
       </list>
     </option>
@@ -274,6 +294,27 @@
               <item name="lib" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="PhpParser" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
+            <path>
+              <item name="PHPVulFinder" type="b2602c69:ProjectViewProjectNode" />
+              <item name="PHPVulFinder" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="vendor" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="nikic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="php-parser" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="lib" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="PhpParser" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Node" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="PHPVulFinder" type="b2602c69:ProjectViewProjectNode" />
+              <item name="PHPVulFinder" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="vendor" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="nikic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="php-parser" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="lib" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="PhpParser" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Node" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Stmt" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -315,12 +356,12 @@
       <option name="presentableId" value="Default" />
       <updated>1571799883864</updated>
       <workItem from="1571799886330" duration="46398000" />
-      <workItem from="1573184530528" duration="42391000" />
+      <workItem from="1573184530528" duration="48048000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="88789000" />
+    <option name="totallyTimeSpent" value="94446000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
@@ -357,13 +398,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/vendor/nikic/php-parser/lib/PhpParser/Node/Expr/BinaryOp/BitwiseXor.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/nikic/php-parser/lib/PhpParser/Node/Expr/BinaryOp/BitwiseAnd.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
@@ -730,19 +764,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/AST2IR.php">
+    <entry file="file://$PROJECT_DIR$/tests/switch_test.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="108" column="9" lean-forward="false" selection-start-line="108" selection-start-column="9" selection-end-line="108" selection-end-column="9" />
+        <state relative-caret-position="475">
+          <caret line="19" column="13" lean-forward="true" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/switch_test.php">
+    <entry file="file://$PROJECT_DIR$/tests/for_test.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="13" column="14" lean-forward="true" selection-start-line="13" selection-start-column="14" selection-end-line="13" selection-end-column="14" />
+        <state relative-caret-position="50">
+          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/AST2IR.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="521">
+          <caret line="425" column="0" lean-forward="true" selection-start-line="425" selection-start-column="0" selection-end-line="425" selection-end-column="0" />
+          <folding>
+            <element signature="e#4994#5049#0#PHP" expanded="false" />
+            <element signature="e#5059#7777#0#PHP" expanded="false" />
+            <element signature="e#7788#8818#0#PHP" expanded="false" />
+            <element signature="e#8829#9096#0#PHP" expanded="false" />
+            <element signature="n#parseSwitch#0;n#AST2IR#0;n#!!top" expanded="false" />
+            <element signature="e#11437#11574#0#PHP" expanded="false" />
+            <element signature="e#11583#11689#0#PHP" expanded="false" />
+            <element signature="e#11698#11960#0#PHP" expanded="false" />
+            <element signature="e#11970#12168#0#PHP" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

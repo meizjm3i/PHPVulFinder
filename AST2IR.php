@@ -44,6 +44,7 @@ class AST2IR{
         $this->var_debug($this->quads);
         $blockDivide = new BlockDivide();
 
+
         $ir = $blockDivide->SimulateIR($this->quads);
 
         $ir = $blockDivide->IROptimize($ir);
@@ -66,9 +67,10 @@ class AST2IR{
             }elseif (in_array($node->getType(),$RETURN_STATEMENT)){
 
 
+
                 // Loop
             }elseif(in_array($node->getType(),$LOOP_STATEMENT)){
-
+                $this->StmtParse($node);
 
                 // Stop
             }elseif (in_array($node->getType(),$STOP_STATEMENT)){
@@ -76,10 +78,25 @@ class AST2IR{
 
             }else{
                 if($node instanceof PhpParser\Node\Stmt){
-//                    $this->var_debug($this->quadId);
                     $this->StmtParse($node);
                 }
             }
+        }
+    }
+    public function addLoop($node){
+        switch ($node->getType()){
+            case 'Stmt_For':  //for(i=0;i<3;i++) ===> extract var i
+//                $this->var_debug($node);
+                break ;
+            case 'Stmt_While':  //while(cond) ====> extract cond
+
+                break ;
+            case 'Stmt_Foreach':  //foreach($nodes as $node) ======> extract $nodes
+
+                break ;
+            case 'Stmt_Do':   //do{}while(cond); =====> extract cond
+
+                break ;
         }
     }
 
@@ -94,17 +111,13 @@ class AST2IR{
             case 'Stmt_Switch':
                 $this->parseSwitch($node);
                 break;
-
             case 'Stmt_TryCatch':
-
                 break;
 
             case 'Expr_Ternary':
-
                 break;
 
             case 'Expr_BinaryOp_LogicalOr':
-
                 break;
         }
 
@@ -179,10 +192,12 @@ class AST2IR{
         if($debug == 1){
             var_dump($expr);
         }
+
         if($expr instanceof  PhpParser\Node\Expr\BinaryOp\BooleanAnd ||
             $expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanOr ||
             $expr instanceof PhpParser\Node\Expr\BinaryOp\Equal ||
-            $expr instanceof PhpParser\Node\Expr\BinaryOp\Concat
+            $expr instanceof PhpParser\Node\Expr\BinaryOp\Concat ||
+            $expr instanceof PhpParser\Node\Expr\BinaryOp\Smaller
         ){
             /*
              * 布尔运算符 && 、 || 、 == 、Concat 的处理，目前仅考虑常见的两种情况:
@@ -190,6 +205,7 @@ class AST2IR{
              * 2. 两边都为常数
              */
 //            var_dump($expr);
+
             if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp ){
                 /*
                  * 布尔运算符的两边至少一边有二进制操作，比如 2 && (3==1)
@@ -219,14 +235,19 @@ class AST2IR{
                 }
             }elseif ($expr->left instanceof PhpParser\Node\Scalar || $expr->right instanceof PhpParser\Node\Scalar){
 
-                if($expr->left instanceof PhpParser\Node\Scalar && $expr->right instanceof PhpParser\Node\Scalar){
+                if(($expr->left instanceof PhpParser\Node\Scalar || $expr->left instanceof PhpParser\Node\Expr\Variable) &&
+                    $expr->right instanceof PhpParser\Node\Scalar
+                ){
                     $this->quadId += 1;
                     $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->left,$expr->right,"temp_$this->quadId");
                 }
+
             }
         }
 
+
         if($expr instanceof PhpParser\Node\Expr\Assign){
+
             /*
              * 对于赋值语句只做了左值是单变量的处理，对于复杂表达式的处理以后加
              *
@@ -238,6 +259,8 @@ class AST2IR{
                  * 生成一个四元组，对于expr是常量的情况，直接进行ASSIGN四元组的生成
                  *
                  */
+
+//                $this->var_debug($expr);
                 $this->quadId += 1;
                 $id = $this->quadId ;
                 $this->quads[$id] = new Quad(0,$id,$expr->getType(),null,$expr->expr,$expr->var);
@@ -255,20 +278,15 @@ class AST2IR{
         }
 
 
-    }
-
-
-
-
-
-    public function calcCondDepth($cond){
-        if($cond == null){
-            return 0;
+        if($expr instanceof PhpParser\Node\Expr\PostInc ||
+            $expr instanceof PhpParser\Node\Expr\PostDec
+        ){
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,null,null);
         }
-        $leftDepth = $this->calcCondDepth($cond->left);
-        $rightDepth = $this->calcCondDepth($cond->right);
-        return ((($leftDepth > $rightDepth) ? $leftDepth : $rightDepth) + 1);
+
     }
+
 
     /*
      * 将 Switch-Case-Default 语句的AST转换为四元组
@@ -364,6 +382,48 @@ class AST2IR{
         if($stmt instanceof PhpParser\Node\Stmt\Echo_){
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$stmt->getType(),null,$stmt->exprs,null);
+        }
+
+        if($stmt instanceof PhpParser\Node\Stmt\For_){
+
+            if(is_array($stmt->init)){
+                foreach ($stmt->init as $init){
+                    $this->ExprParse($init);
+                }
+            }else{
+                $this->ExprParse($stmt->init,1);
+            }
+
+            if(is_array($stmt->cond)){
+                foreach ($stmt->cond as $cond){
+                    $this->ExprParse($cond);
+                }
+            }else{
+                $this->ExprParse($stmt->cond,1);
+            }
+            $cond_id = $this->quadId;
+            $this->quadId +=1 ;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,"JUMP",$cond_id,0,null);
+            if(is_array($stmt->loop)){
+                foreach ($stmt->loop as $loop){
+                    $this->ExprParse($loop,0);
+                }
+            }else{
+                $this->ExprParse($stmt->loop,1);
+            }
+
+            if(is_array($stmt->stmts)){
+                foreach ($stmt->stmts as $stmts){
+                    $this->StmtParse($stmts);
+                }
+            }else{
+                $this->StmtParse($stmt->stmts);
+            }
+
+            $this->quads[$this->quadId]->set_result($cond_id);
+
+            $this->quads[$cond_id + 1]->set_result($this->quadId+1);
+
         }
     }
 
