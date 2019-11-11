@@ -52,7 +52,7 @@ class AST2IR{
         $blocks = $blockDivide->ParseIR($ir);
     }
 
-    public  function test($nodes,$condition){
+    public  function test($nodes){
         global $JUMP_STATEMENT,$RETURN_STATEMENT,$LOOP_STATEMENT,$STOP_STATEMENT;
 
         if(!is_array($nodes)){
@@ -62,6 +62,7 @@ class AST2IR{
         foreach ($nodes as $node){
             //JUMP
             if(in_array($node->getType(),$JUMP_STATEMENT)){
+//                $this->var_debug($node);
                 $this->getBranches($node);
                 // Return
             }elseif (in_array($node->getType(),$RETURN_STATEMENT)){
@@ -77,6 +78,7 @@ class AST2IR{
 
 
             }else{
+
                 if($node instanceof PhpParser\Node\Stmt){
                     $this->StmtParse($node);
                 }
@@ -86,7 +88,7 @@ class AST2IR{
     public function addLoop($node){
         switch ($node->getType()){
             case 'Stmt_For':  //for(i=0;i<3;i++) ===> extract var i
-//                $this->var_debug($node);
+
                 break ;
             case 'Stmt_While':  //while(cond) ====> extract cond
 
@@ -344,10 +346,19 @@ class AST2IR{
         }
 
         foreach ($jump_array as $jump_id){
-            if($this->quads[$jump_id]->op == "Stmt_Break" ||
-                $this->quads[$jump_id]->op == "Stmt_Continue"
-            ){
-                $this->quads[$jump_id]->result = $this->quadId + 1;
+
+            switch ($this->quads[$jump_id]->op){
+                case 'Stmt_Break':
+                    $this->quads[$jump_id]->result = $this->quadId + 1;
+                    break;
+                case 'Stmt_Continue':
+                    $this->quads[$jump_id]->result = $this->quadId + 1;
+                    break;
+                case 'Stmt_Continue_2':
+                    // 跳到外层循环中
+                    // 先随便给个值，在for解析中回填
+                    $this->quads[$jump_id]->result = $this->quadId + 1;
+                    break;
             }
         }
         for($i = 0;$i<$cases_count;$i++) {
@@ -375,8 +386,16 @@ class AST2IR{
         if($stmt instanceof PhpParser\Node\Stmt\Break_ ||
             $stmt instanceof PhpParser\Node\Stmt\Continue_
         ){
-            $this->quadId += 1;
-            $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType(),null,null,null);
+
+            if($stmt->num instanceof PhpParser\Node\Scalar\LNumber &&
+                $stmt->num->value == 2
+            ){
+                $this->quadId += 1;
+                $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType()."_2",null,null,null);
+            }elseif ($stmt->num == null){
+                $this->quadId += 1;
+                $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType(),null,null,null);
+            }
         }
 
         if($stmt instanceof PhpParser\Node\Stmt\Echo_){
@@ -412,17 +431,23 @@ class AST2IR{
                 $this->ExprParse($stmt->loop,1);
             }
 
+            $loop_id = $this->quadId;
             if(is_array($stmt->stmts)){
                 foreach ($stmt->stmts as $stmts){
-                    $this->StmtParse($stmts);
+                    $this->test($stmts);
                 }
             }else{
-                $this->StmtParse($stmt->stmts);
+                $this->test($stmt->stmts);
             }
 
             $this->quads[$this->quadId]->set_result($cond_id);
-
             $this->quads[$cond_id + 1]->set_result($this->quadId+1);
+
+            for($i=$loop_id;$i<=$this->quadId;$i++){
+                if($this->quads[$i]->op == "Stmt_Continue_2"){
+                    $this->quads[$i]->set_result($cond_id);
+                }
+            }
 
         }
     }
