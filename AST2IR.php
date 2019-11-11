@@ -41,7 +41,7 @@ class AST2IR{
         $this->quadId += 1;
         $this->quads[$this->quadId] = new Quad(0,$this->quadId);
         $this->test($nodes,null);
-
+        $this->var_debug($this->quads);
         $blockDivide = new BlockDivide();
 
         $ir = $blockDivide->SimulateIR($this->quads);
@@ -75,7 +75,10 @@ class AST2IR{
 
 
             }else{
-                $this->ExprParse($node,0);
+                if($node instanceof PhpParser\Node\Stmt){
+//                    $this->var_debug($this->quadId);
+                    $this->StmtParse($node);
+                }
             }
         }
     }
@@ -86,9 +89,6 @@ class AST2IR{
 
         switch ($type){
             case 'Stmt_If':
-                // 处理 if-elseif-else语句中的条件，跳转关系使用四元组存储
-
-//                var_dump()
                 $this->conditonParse($node);
                 break;
             case 'Stmt_Switch':
@@ -107,7 +107,7 @@ class AST2IR{
 
                 break;
         }
-        var_dump($this->quads);
+
 
     }
     /*
@@ -226,21 +226,6 @@ class AST2IR{
             }
         }
 
-        if($expr instanceof PhpParser\Node\Stmt\Expression){
-            $expression = $expr->expr;
-            if($expression instanceof PhpParser\Node\Expr\Assign){
-                if($expression->var instanceof PhpParser\Node\Stmt\Expression){
-                    $this->ExprParse($expression->var,0);
-                }
-                if($expression->expr instanceof PhpParser\Node\Stmt\Expression){
-                    $this->ExprParse($expression->expr,0);
-                }
-                $this->quadId += 1;
-                $id = $this->quadId ;
-
-                $this->quads[$id] = new Quad(0,$id,$expression->getType(),$expression->expr,null,$expression->var);
-            }
-        }
         if($expr instanceof PhpParser\Node\Expr\Assign){
             /*
              * 对于赋值语句只做了左值是单变量的处理，对于复杂表达式的处理以后加
@@ -322,23 +307,64 @@ class AST2IR{
         /*
          * 开始处理 cases
          * cases是一个数组，里面存放是各个case，使用foreach处理
+         *
+         * 每个case有 cond 和 stmts
+         *
+         * stmts里面的跳转节点可能有 break, continue, continue 2
+         *
+         * break与continue的跳转流程类似，continue 2与这两者不同
          */
-
-//        var_dump($node->cases);
+        $case_cond_array = array();
+        $case_stmt_array = array();
+        $jump_array = array();
         foreach ($node->cases as $case) {
-
-            $this->parseCase($case);
-
+            $this->ExprParse($case->cond,0);
+            array_push($case_cond_array,$this->quadId);
+            array_push($case_stmt_array,$this->quadId);
+            $this->StmtParse($case->stmts);
+            array_push($jump_array,$this->quadId);
         }
 
+        foreach ($jump_array as $jump_id){
+            if($this->quads[$jump_id]->op == "Stmt_Break" ||
+                $this->quads[$jump_id]->op == "Stmt_Continue"
+            ){
+                $this->quads[$jump_id]->result = $this->quadId + 1;
+            }
+        }
+        for($i = 0;$i<$cases_count;$i++) {
+            $id = $JUMP_ID[$i];
+            $case_cond = $case_cond_array[$i];
+            $case_stmt = $case_stmt_array[$i];
+            $this->quads[$id]->set_arg2($case_cond);
+            $this->quads[$id]->set_result($case_stmt);
+        }
+        /*
+         * 回填break、continue、continue 2的跳转地址
+         */
     }
 
-    public function parseCase($case){
-//        var_dump($this->quadId);
-//        var_dump($case);
-        $this->ExprParse($case->cond,0);
+    public function StmtParse($stmt){
+        if(is_array($stmt)){
+            foreach ($stmt as $stmt_single){
+                $this->StmtParse($stmt_single);
+            }
+        }
+        if($stmt instanceof PhpParser\Node\Stmt\Expression){
 
-//        var_dump($this->quads);
+            $this->ExprParse($stmt->expr);
+        }
+        if($stmt instanceof PhpParser\Node\Stmt\Break_ ||
+            $stmt instanceof PhpParser\Node\Stmt\Continue_
+        ){
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType(),null,null,null);
+        }
+
+        if($stmt instanceof PhpParser\Node\Stmt\Echo_){
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,$stmt->getType(),null,$stmt->exprs,null);
+        }
     }
 
     public function parseTryCatch(){
@@ -349,6 +375,15 @@ class AST2IR{
 
     }
 
+    public function var_debug($debug){
+        if(is_array($debug)){
+            foreach ($debug as $d){
+                var_dump($d);
+            }
+        }else{
+            var_dump($debug);
+        }
+    }
 
 
 }
