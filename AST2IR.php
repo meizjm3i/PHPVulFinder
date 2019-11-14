@@ -28,6 +28,7 @@ class AST2IR{
 
     public $quadId ;
     public $quads;
+    public $funcs;
     public function __construct()
     {
         $this->quadId = -1;
@@ -40,16 +41,53 @@ class AST2IR{
         //$this->generateQuad($nodes);
         $this->quadId += 1;
         $this->quads[$this->quadId] = new Quad(0,$this->quadId);
-        $this->test($nodes,null);
-//        $this->var_debug($this->quads);
-        $blockDivide = new BlockDivide();
+        $this->funcs = array();
+        $this->build_classTable($nodes);
+        $this->build_funcTable($nodes);
+        $this->test($nodes);
+        $flow_graph = new FlowGraphs();
+        $flow_graph->BlockDivide($this->quads,$this->funcs);
+    }
+
+    public function SimpleParse($nodes){
+        if(!is_array($nodes)){
+            $nodes = array($nodes);
+        }
+        $this->quadId += 1;
+        $this->quads[$this->quadId] = new Quad(0,$this->quadId);
+        $this->funcs = array();
+        $this->build_classTable($nodes);
+        $this->build_funcTable($nodes);
+        $this->test($nodes);
+        return $this->quads;
+
+    }
 
 
-        $ir = $blockDivide->SimulateIR($this->quads);
+    /*
+     * 建立函数表
+     * 在进行四元组生成时，暂时不生成用户自定义函数的四元组，等进行基本块划分再对自定义函数直接生成基本块
+     */
+    public function build_funcTable($nodes){
+        if(!is_array($nodes)){
+            $nodes = array($nodes);
+        }
 
-        $ir = $blockDivide->IROptimize($ir);
+        foreach ($nodes as $node){
+            if($node instanceof PhpParser\Node\Stmt\Function_){
+                $func_name   = $node->name;
+                $func_params_count = count($node->params);
+                $func_params = $node->params;
+                $func_stmt   = $node->stmts;
+                $hash = md5($func_name->name);
+                $this->funcs[$hash] = new func_table($func_name,$func_stmt,$func_params,$func_params_count,false,null,'\\');
+            }
 
-        $blocks = $blockDivide->ParseIR($ir);
+        }
+    }
+
+    public function build_classTable($nodes){
+
     }
 
     public  function test($nodes){
@@ -75,7 +113,7 @@ class AST2IR{
 
 
             }else{
-                $this->var_debug($node);
+                //$this->var_debug($node);
 
                 if($node instanceof PhpParser\Node\Stmt){
                     $this->StmtParse($node);
@@ -300,6 +338,7 @@ class AST2IR{
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,$expr->dim,"temp_$this->quadId");
         }
 
+
     }
 
 
@@ -324,19 +363,34 @@ class AST2IR{
 
     public function parseSwitch($node){
         $cases_count = count($node->cases);
-        if($node->cond instanceof PhpParser\Node\Expr){
-            $this->ExprParse($node->cond,0);
-        }
-        $now_id = $this->quadId;
         $JUMP_ID = array();
-        for($i = 0;$i<$cases_count;$i++){
-            $this->quadId += 1;
-            $JUMP_ID[$i] = $this->quadId;
-            $this->quads[$this->quadId] = new Quad(1,$this->quadId,"JUMP",$this->quads[$now_id]->result);
-            /*
-             * arg2 与 result 需要在解析完case后再进行回填
-             */
+
+        if($node->cond instanceof PhpParser\Node\Expr){
+
+            if($node->cond instanceof PhpParser\Node\Expr\Variable){
+                for($i = 0;$i<$cases_count;$i++){
+                    $this->quadId += 1;
+                    $JUMP_ID[$i] = $this->quadId;
+                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,"JUMP",$node->cond);
+                    /*
+                     * arg2 与 result 需要在解析完case后再进行回填
+                     */
+                }
+            }else{
+                $this->ExprParse($node->cond,0);
+                $now_id = $this->quadId;
+                for($i = 0;$i<$cases_count;$i++){
+                    $this->quadId += 1;
+                    $JUMP_ID[$i] = $this->quadId;
+                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,"JUMP",$this->quads[$now_id]->result);
+                    /*
+                     * arg2 与 result 需要在解析完case后再进行回填
+                     */
+                }
+            }
         }
+
+
         /*
          * 开始处理 cases
          * cases是一个数组，里面存放是各个case，使用foreach处理
@@ -350,16 +404,24 @@ class AST2IR{
         $case_cond_array = array();
         $case_stmt_array = array();
         $jump_array = array();
+
+
         foreach ($node->cases as $case) {
-            $this->ExprParse($case->cond,0);
-            array_push($case_cond_array,$this->quadId);
-            array_push($case_stmt_array,$this->quadId);
+            if($case->cond instanceof PhpParser\Node\Scalar){
+                $this->ScalarParse($case->cond);
+                array_push($case_cond_array,$this->quadId);
+            }elseif($case->cond instanceof PhpParser\Node\Expr){
+                $this->ExprParse($case->cond);
+                array_push($case_cond_array,$this->quadId);
+            }elseif($case->cond == null){
+                array_push($case_cond_array,$node->cond);
+            }
+            array_push($case_stmt_array,$this->quadId+1);
             $this->StmtParse($case->stmts);
             array_push($jump_array,$this->quadId);
         }
 
         foreach ($jump_array as $jump_id){
-
             switch ($this->quads[$jump_id]->op){
                 case 'Stmt_Break':
                     $this->quads[$jump_id]->result = $this->quadId + 1;
@@ -374,6 +436,7 @@ class AST2IR{
                     break;
             }
         }
+
         for($i = 0;$i<$cases_count;$i++) {
             $id = $JUMP_ID[$i];
             $case_cond = $case_cond_array[$i];
@@ -410,12 +473,10 @@ class AST2IR{
                 $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType(),null,null,null);
             }
         }
-
         if($stmt instanceof PhpParser\Node\Stmt\Echo_){
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$stmt->getType(),null,$stmt->exprs,null);
         }
-
         if($stmt instanceof PhpParser\Node\Stmt\For_){
 
             if(is_array($stmt->init)){
@@ -462,6 +523,14 @@ class AST2IR{
                 }
             }
 
+        }
+    }
+
+    public function ScalarParse($Scalar){
+        echo "****";
+        if($Scalar instanceof PhpParser\Node\Scalar\String_){
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,"Expr_Assign",null,$Scalar->value,"temp_$this->quadId");
         }
     }
 

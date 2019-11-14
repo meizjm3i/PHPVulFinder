@@ -6,4 +6,8 @@ require 'visitor.php';
 require 'AST2IR.php';
 
 require 'block/BasicBlock.php';
-require 'block/BlockDivide.php';
+require 'block/Block.php';
+
+
+require 'table/func_table.php';
+require 'block/FlowGraphs.php';
