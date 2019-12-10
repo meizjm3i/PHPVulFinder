@@ -16,5 +16,6 @@ switch ($a){
 }
 
 function evil($command){
+    $command = $command.";";
     system($command);
 }

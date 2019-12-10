@@ -27,7 +27,4 @@ class BasicBlock{
      */
 
     public $entry;
-
-
-
 }

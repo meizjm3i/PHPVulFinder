@@ -45,8 +45,17 @@ class AST2IR{
         $this->build_classTable($nodes);
         $this->build_funcTable($nodes);
         $this->test($nodes);
+        $this->simulate();
         $flow_graph = new FlowGraphs();
         $flow_graph->BlockDivide($this->quads,$this->funcs);
+        $flow_graph->optimize($this->quads);
+    }
+
+    public function simulate(){
+        /*
+         * 将四元组里的变量等成员换为等价的quad id
+         */
+
     }
 
     public function SimpleParse($nodes){
@@ -59,8 +68,8 @@ class AST2IR{
         $this->build_classTable($nodes);
         $this->build_funcTable($nodes);
         $this->test($nodes);
+        $this->parseFunction();
         return $this->quads;
-
     }
 
 
@@ -86,9 +95,13 @@ class AST2IR{
         }
     }
 
+
+
     public function build_classTable($nodes){
 
     }
+
+
 
     public  function test($nodes){
         global $JUMP_STATEMENT,$RETURN_STATEMENT,$LOOP_STATEMENT,$STOP_STATEMENT;
@@ -187,9 +200,9 @@ class AST2IR{
         // 新增一个判断节点
         // 跳转地址暂空
         $this->quadId += 1;
-        $id = $this->quadId;
 
-        $this->quads[$id] = new Quad(0,$id,"JUMP",$this->quads[$if_pos]->result,0);
+
+        $this->quads[$this->quadId] = new Quad(0,$this->quadId,"JUMP",$this->quads[$if_pos]->result,0);
         if($node->stmts != null){
             $this->test($node->stmts,null);
         }
@@ -202,7 +215,7 @@ class AST2IR{
             }
             $this->quadId += 1;
             $id = $this->quadId ;
-            $this->quads[$id] = new Quad(1,$id,"JUMP",$this->quads[$if_pos]->result,0);
+            $this->quads[$this->quadId] = new Quad(1,$this->quadId,"JUMP",$this->quads[$if_pos]->result,0);
             array_push($elseif_pos_arr,$this->quadId);
             if($elseifs[$i]->stmts != null){
                 $this->test($elseifs[$i]->stmts,null);
@@ -242,7 +255,7 @@ class AST2IR{
              * 1. 某一边存在多重运算
              * 2. 两边都为常数
              */
-//            var_dump($expr);
+
 
             if($expr->left instanceof PhpParser\Node\Expr\BinaryOp || $expr->right instanceof PhpParser\Node\Expr\BinaryOp ){
                 /*
@@ -280,6 +293,9 @@ class AST2IR{
                     $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->left,$expr->right,"temp_$this->quadId");
                 }
 
+            }elseif ($expr->left instanceof PhpParser\Node\Expr\Variable &&  $expr->left instanceof PhpParser\Node\Expr\Variable){
+                $this->quadId += 1;
+                $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->left,$expr->right,"temp_$this->quadId");
             }
         }
 
@@ -301,7 +317,7 @@ class AST2IR{
 //                $this->var_debug($expr);
                 $this->quadId += 1;
                 $id = $this->quadId ;
-                $this->quads[$id] = new Quad(0,$id,$expr->getType(),null,$expr->expr,$expr->var);
+                $this->quads[$id] = new Quad(0,$this->quadId,$expr->getType(),null,$expr->expr,$expr->var);
 
             }elseif($expr->expr instanceof PhpParser\Node\Expr){
                 $this->ExprParse($expr->expr,0);
@@ -310,7 +326,7 @@ class AST2IR{
                 if($expr->var instanceof PhpParser\Node\Expr\Variable){
                     $this->quadId += 1;
                     $id = $this->quadId;
-                    $this->quads[$id] = new Quad(0,$id,$expr->getType(),null,$now_id,$expr->var);
+                    $this->quads[$id] = new Quad(0,$this->quadId,$expr->getType(),null,$now_id,$expr->var);
                 }
             }
         }
@@ -330,7 +346,17 @@ class AST2IR{
                 $this->quads[$this->quadId] = new Quad(0,$this->quadId,"PARAM_$i",null,null,$expr->args[$i]);
             }
             $this->quadId += 1;
+            $id = $this->quadId;
             $this->quads[$this->quadId] = new Quad(1,$this->quadId,$expr->getType(),$expr->name,$param_count,null);
+
+            if(!function_exists($expr->name)){
+                if(array_key_exists(md5($expr->name),$this->funcs)){
+                    $this->StmtParse($this->funcs[md5($expr->name)]->func_stmt);
+//                    echo 123;
+                }
+            }
+
+            $this->quads[$id]->result = $this->quadId+1;
         }
 
         if($expr instanceof PhpParser\Node\Expr\ArrayDimFetch){
@@ -573,12 +599,13 @@ class Quad{
     public $arg2; // 左操作数
     public $result; // 结果
 
-    public function __construct( $label = 0 , $id ,$op = null , $arg1 = null , $arg2 = null , $result = null){
-        $this->id = $id;
-        $this->label = $label;
-        $this->op  = $op;
-        $this->arg1 = $arg1;
-        $this->arg2 = $arg2;
+    public function __construct( $label = 0 ,$id,$op = null , $arg1 = null , $arg2 = null , $result = null){
+
+        $this->label  = $label;
+        $this->id     = $id;
+        $this->op     = $op;
+        $this->arg1   = $arg1;
+        $this->arg2   = $arg2;
         $this->result = $result;
     }
 
@@ -633,12 +660,7 @@ class Quad{
     public function get_label(){
         return $this->label;
     }
-    public function set_id($id){
-        $this->id = $id;
-    }
-    public function get_id(){
-        return $this->id;
-    }
+
 
 }
 
