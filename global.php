@@ -1,5 +1,9 @@
 <?php
 
+//ini_set("xdebug.var_display_max_children",128);
+//ini_set("xdebug.var_display_max_data",512);
+//ini_set("xdebug.var_display_max_depth",5);
+
 define("SITE_ROOT",str_replace("\\","/",__DIR__));
 require 'vendor/autoload.php';
 require 'visitor.php';

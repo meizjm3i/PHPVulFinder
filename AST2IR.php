@@ -10,6 +10,7 @@ $RETURN_STATEMENT = array('Stmt_Return') ;
 $STOP_STATEMENT = array('Stmt_Throw','Stmt_Break','Stmt_Continue') ;
 $LOOP_STATEMENT = array('Stmt_For','Stmt_While','Stmt_Foreach','Stmt_Do') ;
 $JUMP_STATEMENT = array('Stmt_If','Stmt_Switch','Stmt_TryCatch','Expr_Ternary','Expr_BinaryOp_LogicalOr') ;
+
 class AST2IR{
 
     /*
@@ -44,20 +45,18 @@ class AST2IR{
         $this->funcs = array();
         $this->build_classTable($nodes);
         $this->build_funcTable($nodes);
+//        file_put_contents("a.txt",print_r($nodes));
         $this->test($nodes);
-        $this->simulate();
         $flow_graph = new FlowGraphs();
-        $flow_graph->BlockDivide($this->quads,$this->funcs);
-        $flow_graph->optimize($this->quads);
+        $flow_graph->BlockDivide($this->quads);
+        $this->quads = $flow_graph->optimize($this->quads);
+        echo "****";
+//        var_dump($this->quads);
+        echo "****";
+        var_dump($flow_graph->graph);
+        return $this->quads;
+
     }
-
-    public function simulate(){
-        /*
-         * 将四元组里的变量等成员换为等价的quad id
-         */
-
-    }
-
     public function SimpleParse($nodes){
         if(!is_array($nodes)){
             $nodes = array($nodes);
@@ -109,7 +108,6 @@ class AST2IR{
         if(!is_array($nodes)){
             $nodes = array($nodes);
         }
-
         foreach ($nodes as $node){
 
             if(in_array($node->getType(),$JUMP_STATEMENT)){
@@ -127,7 +125,6 @@ class AST2IR{
 
             }else{
                 //$this->var_debug($node);
-
                 if($node instanceof PhpParser\Node\Stmt){
                     $this->StmtParse($node);
                 }
@@ -243,7 +240,6 @@ class AST2IR{
         if($debug == 1){
             var_dump($expr);
         }
-
         if($expr instanceof  PhpParser\Node\Expr\BinaryOp\BooleanAnd ||
             $expr instanceof PhpParser\Node\Expr\BinaryOp\BooleanOr ||
             $expr instanceof PhpParser\Node\Expr\BinaryOp\Equal ||
@@ -298,8 +294,6 @@ class AST2IR{
                 $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->left,$expr->right,"temp_$this->quadId");
             }
         }
-
-
         if($expr instanceof PhpParser\Node\Expr\Assign){
 
             /*
@@ -328,17 +322,17 @@ class AST2IR{
                     $id = $this->quadId;
                     $this->quads[$id] = new Quad(0,$this->quadId,$expr->getType(),null,$now_id,$expr->var);
                 }
+
             }
+
+
         }
-
-
         if($expr instanceof PhpParser\Node\Expr\PostInc ||
             $expr instanceof PhpParser\Node\Expr\PostDec
         ){
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,null,null);
         }
-
         if($expr instanceof PhpParser\Node\Expr\FuncCall){
             $param_count = count($expr->args);
             for($i=0;$i<$param_count;$i++){
@@ -352,18 +346,33 @@ class AST2IR{
             if(!function_exists($expr->name)){
                 if(array_key_exists(md5($expr->name),$this->funcs)){
                     $this->StmtParse($this->funcs[md5($expr->name)]->func_stmt);
-//                    echo 123;
                 }
             }
 
             $this->quads[$id]->result = $this->quadId+1;
         }
-
         if($expr instanceof PhpParser\Node\Expr\ArrayDimFetch){
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,$expr->dim,"temp_$this->quadId");
         }
-
+        if($expr instanceof PhpParser\Node\Expr\Array_){
+            foreach ($expr->items as $item) {
+                $this->ExprParse($item);
+            }
+            // arg1: 参数个数
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,$item->getType(),count($expr->items),null,"ARRAY_$this->quadId");
+        }
+        if($expr instanceof PhpParser\Node\Expr\ArrayItem){
+            if($expr->value instanceof PhpParser\Node\Expr\Variable && $expr->key == null){
+                $this->quadId += 1;
+                $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->key,$expr->value,"ARRAY_PARAM_$this->quadId");
+            }
+        }
+        if($expr instanceof PhpParser\Node\Expr\Exit_){
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),null,null,null);
+        }
 
     }
 
@@ -482,7 +491,6 @@ class AST2IR{
             }
         }
         if($stmt instanceof PhpParser\Node\Stmt\Expression){
-
             $this->ExprParse($stmt->expr);
         }
         if($stmt instanceof PhpParser\Node\Stmt\Break_ ||

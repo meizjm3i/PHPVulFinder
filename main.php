@@ -25,7 +25,7 @@ function load_file($name,$ver){
     $traverser->traverse($parseResult);
     $nodes  = $NodeInitVisitor->getNodes();
     $ast2ir = new AST2IR();
-    return $ast2ir->parse($nodes);
+    $ast2ir->parse($nodes);
 
 }
 
@@ -34,5 +34,5 @@ $Name = $_POST['path'];
 if(is_dir($Name)){
     exit("Not yet.");
 }elseif (is_file($Name)){
-    var_dump(load_file($Name,5));
+    load_file($Name,5);
 }

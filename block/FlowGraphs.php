@@ -20,8 +20,11 @@ class FlowGraphs{
      * 关于函数调用：
      * 每个函数都作为一个新的BasicBlock
      *
-     *
-     *
+     * 确定尾指令：
+     * 1. 以下一块开头结尾
+     * 2. 以__halt_compiler结尾
+     * 3. 以exit、die、return结尾
+     * 4. 代码结束
      */
     public function __construct()
     {
@@ -31,21 +34,30 @@ class FlowGraphs{
     public function BlockDivide($quads){
         $this->graph[$this->graph_id] = new BasicBlock();
         $this->graph[$this->graph_id]->entry = 1;
-        $this->graph_id += 1;
+
         $quad_id = count($quads);
+//        var_dump($quads);
         for($i = 0 ; $i < $quad_id ; $i++){
-            if($quads[$i]->op == "JUMP" ||
-                $quads[$i]->op == "Expr_FuncCall"
-            ){
-                $this->graph[$this->graph_id] = new BasicBlock();
-                $this->graph[$this->graph_id]->entry = $quads[$i+1]->id;
+//            var_dump($quads[$i]->op);
+//            var_dump($this->graph_id);
+            if($quads[$i]->op == "JUMP" || $quads[$i]->op == "Expr_FuncCall") {
+                /*
+                 * 跳转语句或者函数调用语句都可新建一个基本块
+                 */
                 $this->graph_id += 1;
+                $this->graph[$this->graph_id] = new BasicBlock();
+                $this->graph[$this->graph_id]->inedge = $quads[$i+1]->id;
                 $id = $quads[$i]->result;
                 if($quads[$id] != null ){
-                    $this->graph[$this->graph_id] = new BasicBlock();
-                    $this->graph[$this->graph_id]->entry = $quads[$id]->id;
                     $this->graph_id += 1;
+                    $this->graph[$this->graph_id] = new BasicBlock();
+                    $this->graph[$this->graph_id]->inedge = $quads[$id]->id;
                 }
+            }elseif($quads[$i]->op == "Expr_Exit" || $quads[$i]->op == "Exit_Return" || $quads[$i]->op == "Exit_Die"){
+                /*
+                 * 以exit、die、return结尾
+                 */
+                $this->graph[$this->graph_id-1]->outedge = $quads[$i+1]->id;
             }
         }
     }
@@ -64,9 +76,13 @@ class FlowGraphs{
             // 删除公共子表达式
             $quads = $this->delete_CommonExpr($code,$quads);
 
-            var_dump($quads);
+
             // 删除无用代码
             $this->delete_UnusedCode($code,$quads);
+
+            return $quads;
+
+
         }
     }
 
@@ -110,9 +126,9 @@ class FlowGraphs{
             }
         }
         $dup = $this->get_keys_for_duplicate_values($CommonExpr);
-        echo '****';
-        var_dump($dup);
-        echo '****';
+//        echo '****';
+//        var_dump($dup);
+//        echo '****';
 
         /*
          * 对于公共子表达式，首先将后续所有的调用指向第一次出现的位置，再删除非第一次的赋值
@@ -141,6 +157,9 @@ class FlowGraphs{
 
     }
 
+    /*
+     * 在同一个BasicBlock中进行无用代码优化
+     */
     public function delete_UnusedCode($BlockId){
 
     }

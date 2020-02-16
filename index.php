@@ -15,4 +15,5 @@ $smarty->assign('title','This is my first Composer Project!');
 $smarty->display('index.html');
 
 
+
 ?>
