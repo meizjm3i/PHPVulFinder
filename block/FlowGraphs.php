@@ -48,16 +48,23 @@ class FlowGraphs{
                 $this->graph[$this->graph_id] = new BasicBlock();
                 $this->graph[$this->graph_id]->inedge = $quads[$i+1]->id;
                 $id = $quads[$i]->result;
+//                var_dump($id);
                 if($quads[$id] != null ){
                     $this->graph_id += 1;
                     $this->graph[$this->graph_id] = new BasicBlock();
                     $this->graph[$this->graph_id]->inedge = $quads[$id]->id;
                 }
-            }elseif($quads[$i]->op == "Expr_Exit" || $quads[$i]->op == "Exit_Return" || $quads[$i]->op == "Exit_Die"){
+            }
+            if($quads[$i]->op == "Expr_Exit" || $quads[$i]->op == "Exit_Return" || $quads[$i]->op == "Exit_Die"){
                 /*
                  * 以exit、die、return结尾
                  */
                 $this->graph[$this->graph_id-1]->outedge = $quads[$i+1]->id;
+            }else{
+                if($this->graph_id > 1){
+                    $this->graph[$this->graph_id-1]->outedge = $quads[$id]->id-1;
+                }
+
             }
         }
     }
@@ -78,7 +85,7 @@ class FlowGraphs{
 
 
             // 删除无用代码
-            $this->delete_UnusedCode($code,$quads);
+//            $this->delete_UnusedCode($code,$quads);
 
             return $quads;
 
@@ -126,9 +133,9 @@ class FlowGraphs{
             }
         }
         $dup = $this->get_keys_for_duplicate_values($CommonExpr);
-//        echo '****';
-//        var_dump($dup);
-//        echo '****';
+        echo '**--**';
+        var_dump($dup);
+        echo '**--**';
 
         /*
          * 对于公共子表达式，首先将后续所有的调用指向第一次出现的位置，再删除非第一次的赋值
@@ -147,7 +154,6 @@ class FlowGraphs{
                 unset($quads[$id]);
             }
         }
-
         /*
          * 1. 找到所有指向公共子表达式的arg，转指向表达式第一次出现的地方
          *

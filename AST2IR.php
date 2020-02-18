@@ -45,12 +45,14 @@ class AST2IR{
         $this->funcs = array();
         $this->build_classTable($nodes);
         $this->build_funcTable($nodes);
-//        file_put_contents("a.txt",print_r($nodes));
+//        print_r($nodes);
         $this->test($nodes);
         $flow_graph = new FlowGraphs();
         $flow_graph->BlockDivide($this->quads);
-        $this->quads = $flow_graph->optimize($this->quads);
         echo "****";
+        var_dump($this->quads);
+        $this->quads = $flow_graph->optimize($this->quads);
+//        echo "****";
 //        var_dump($this->quads);
         echo "****";
         var_dump($flow_graph->graph);
@@ -115,8 +117,7 @@ class AST2IR{
                 $this->getBranches($node);
 
             }elseif (in_array($node->getType(),$RETURN_STATEMENT)){
-
-
+                $this->StmtParse($node);
             }elseif(in_array($node->getType(),$LOOP_STATEMENT)){
                 $this->addLoop($node);
 
@@ -557,6 +558,25 @@ class AST2IR{
                 }
             }
 
+        }
+        if($stmt instanceof PhpParser\Node\Stmt\Return_){
+            /*
+             * 可以将return语句看为一个赋值语句，即:
+             * function test(){return 'a';}
+             * $b = test();
+             * 等价于:
+             * $a = 'a';
+             * $b = $a;
+             */
+            if($stmt->expr instanceof PhpParser\Node\Scalar){
+                $this->ScalarParse($stmt->expr);
+            }
+            if($stmt->expr instanceof PhpParser\Node\Expr){
+                $this->ExprParse($stmt->expr);
+            }
+            $now_id = $this->quadId;
+            $this->quadId += 1;
+            $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType(),$now_id,null,"temp_$this->quadId");
         }
     }
 
