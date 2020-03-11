@@ -10,7 +10,6 @@ function a($s){
 function b($ss){
     echo $ss;
     system($ss);
-    exit();
     return "success";
 }
 

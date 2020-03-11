@@ -5,7 +5,7 @@ require 'securing.php';
 $NAME_XSS = 'Cross-Site Scripting';
 $F_XSS = array(
     '__NAME__'						=> 'XSS',
-    'echo'							=> array(array(0), $F_SECURING_XSS),
+    'echo'							=> array(array(1), $F_SECURING_XSS),
     'print'							=> array(array(1), $F_SECURING_XSS),
     'print_r'						=> array(array(1), $F_SECURING_XSS),
     'exit'							=> array(array(1), $F_SECURING_XSS),

@@ -39,7 +39,7 @@ class AST2IR{
         if(!is_array($nodes)){
             $nodes = array($nodes);
         }
-        //$this->generateQuad($nodes);
+
         $this->quadId += 1;
         $this->quads[$this->quadId] = new Quad(0,$this->quadId);
         $this->funcs = array();
@@ -69,7 +69,6 @@ class AST2IR{
         $this->build_classTable($nodes);
         $this->build_funcTable($nodes);
         $this->test($nodes);
-        $this->parseFunction();
         return $this->quads;
     }
 
@@ -349,8 +348,9 @@ class AST2IR{
                     $this->StmtParse($this->funcs[md5($expr->name)]->func_stmt);
                 }
             }
-
             $this->quads[$id]->result = $this->quadId+1;
+//            $this->quadId += 1;
+//            $this->quads[$this->quadId] = new Quad(1,$this->quadId,"FUNC_CALL_FINISHED",null,null,null);
         }
         if($expr instanceof PhpParser\Node\Expr\ArrayDimFetch){
             $this->quadId += 1;

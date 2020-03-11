@@ -9,6 +9,8 @@
 class FlowGraphs{
     public $graph;
     public $graph_id;
+    public $cfg;
+    public $basicblock;
 
 
     /*
@@ -25,47 +27,62 @@ class FlowGraphs{
      * 2. 以__halt_compiler结尾
      * 3. 以exit、die、return结尾
      * 4. 代码结束
+     * 5. 转移语句
+     *
+     * 确定CFG，考虑在入边和出边存在复数情况下的生成
+     *
      */
     public function __construct()
     {
         $this->graph_id = 0;
     }
 
+    public function GenerateCFG(){
+
+    }
+
     public function BlockDivide($quads){
         $this->graph[$this->graph_id] = new BasicBlock();
         $this->graph[$this->graph_id]->entry = 1;
+        $this->graph[$this->graph_id]->inedge = $quads[1];
 
         $quad_id = count($quads);
-//        var_dump($quads);
+        $defined_functions = get_defined_functions();
+        $internal_functions = $defined_functions["internal"];
+        $user_functions = $defined_functions["user"];
         for($i = 0 ; $i < $quad_id ; $i++){
-//            var_dump($quads[$i]->op);
-//            var_dump($this->graph_id);
             if($quads[$i]->op == "JUMP" || $quads[$i]->op == "Expr_FuncCall") {
                 /*
                  * 跳转语句或者函数调用语句都可新建一个基本块
+                 * 当新建一个基本块时，要先对上一个基本块的outedge进行处理
                  */
-                $this->graph_id += 1;
-                $this->graph[$this->graph_id] = new BasicBlock();
-                $this->graph[$this->graph_id]->inedge = $quads[$i+1]->id;
-                $id = $quads[$i]->result;
-//                var_dump($id);
-                if($quads[$id] != null ){
+                if(!in_array($quads[$i]->arg1->parts[0],$internal_functions)){
+                    $this->graph[$this->graph_id]->outedge = $quads[$i];
                     $this->graph_id += 1;
                     $this->graph[$this->graph_id] = new BasicBlock();
-                    $this->graph[$this->graph_id]->inedge = $quads[$id]->id;
+                    $this->graph[$this->graph_id]->inedge = $quads[$i+1];
+                    $id = $quads[$i]->result;
+                    if($quads[$id] != null ){
+                        $this->graph_id += 1;
+                        $this->graph[$this->graph_id] = new BasicBlock();
+                        $this->graph[$this->graph_id]->inedge = $quads[$id];
+                    }
                 }
-            }
-            if($quads[$i]->op == "Expr_Exit" || $quads[$i]->op == "Exit_Return" || $quads[$i]->op == "Exit_Die"){
+            }elseif($quads[$i]->op == "Expr_Exit" || $quads[$i]->op == "Exit_Return" || $quads[$i]->op == "Exit_Die"){
                 /*
                  * 以exit、die、return结尾
                  */
-                $this->graph[$this->graph_id-1]->outedge = $quads[$i+1]->id;
-            }else{
-                if($this->graph_id > 1){
-                    $this->graph[$this->graph_id-1]->outedge = $quads[$id]->id-1;
-                }
+                $this->graph[$this->graph_id-1]->outedge = $quads[$i+1];
+            }elseif(""){
 
+            }elseif(""){
+
+            }else{
+                if($this->graph_id > 1) {
+                    $this->graph[$this->graph_id - 1]->outedge = $quads[$i - 1];
+                }
             }
+
         }
     }
 
@@ -82,11 +99,8 @@ class FlowGraphs{
             $code = $this->variable_to_id($code);
             // 删除公共子表达式
             $quads = $this->delete_CommonExpr($code,$quads);
-
-
             // 删除无用代码
 //            $this->delete_UnusedCode($code,$quads);
-
             return $quads;
 
 
@@ -117,10 +131,7 @@ class FlowGraphs{
                 }
             }
         }
-
         return $code;
-
-
     }
 
     public function delete_CommonExpr($code,$quads){
@@ -134,7 +145,7 @@ class FlowGraphs{
         }
         $dup = $this->get_keys_for_duplicate_values($CommonExpr);
         echo '**--**';
-        var_dump($dup);
+//        var_dump($dup);
         echo '**--**';
 
         /*
