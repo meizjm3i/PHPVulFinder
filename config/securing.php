@@ -34,6 +34,7 @@ $F_SECURING_BOOL = array(
     'ereg',
     'eregi'
 );
+
 //可以防止所有漏洞的函数
 $F_SECURING_STRING = array(
     '__NAME__'  => $SECURES_TYPE_ALL,
@@ -68,6 +69,7 @@ $F_SECURING_STRING = array(
     'max',
     'min'
 );
+
 //PHP中的编码函数
 $F_ENCODING_STRING = array(
     '__NAME__'  => 'encoding',
@@ -76,6 +78,7 @@ $F_ENCODING_STRING = array(
     'base64_encode',
     'html_entity_encode'
 ) ;
+
 //PHP中的解码函数
 $F_DECODING_STRING = array(
     '__NAME__'  => 'decoding',
@@ -84,6 +87,8 @@ $F_DECODING_STRING = array(
     'base64_decode',
     'html_entity_decode'
 ) ;
+
+
 //消除净化标签的函数
 $F_INSECURING_STRING = array(
     '__NAME__'  => 'insecuring',
@@ -96,12 +101,14 @@ $F_INSECURING_STRING = array(
     'chr',
     'htmlspecialchars_decode'
 );
+
 //XSS的安全标签
 $F_SECURING_XSS = array(
     '__NAME__'  => 'XSS',
     'htmlentities',
     'htmlspecialchars'
 );
+
 //SQLI的安全标签
 $F_SECURING_SQL = array(
     '__NAME__'  => 'SQLI',
@@ -120,32 +127,38 @@ $F_SECURING_SQL = array(
     'sqlite_escape_string',
     'sqlite_udf_encode_binary'
 );
+
 //使用正则过滤RCE
 $F_SECURING_PREG = array(
     '__NAME__'  => 'PREG',
     'preg_quote'
 );
+
 //文件操作的安全函数
 $F_SECURING_FILE = array(
     '__NAME__'  => 'FILE',
     'basename',
     'pathinfo'
 );
+
 //防止命令注入的安全函数
 $F_SECURING_SYSTEM = array(
     '__NAME__'  => 'EXEC',
     'escapeshellarg',
     'escapeshellcmd'
 );
+
 //防止XPath注入的安全函数
 $F_SECURING_XPATH = array(
     '__NAME__'  => 'XPATH',
     'addslashes'
 );
+
 //防止LDAP注入的安全函数
 $F_SECURING_LDAP = array(
     '__NAME__'  => 'LDAP',
 );
+
 //全部的安全函数集合
 $F_SECURES_ALL = array_merge(
     $F_SECURING_BOOL,
@@ -157,6 +170,7 @@ $F_SECURES_ALL = array_merge(
     $F_SECURING_SYSTEM,
     $F_SECURING_XPATH
 );
+
 $F_SECURES_ARRAY = array(
     $F_SECURING_BOOL,
     $F_SECURING_STRING,
@@ -167,6 +181,8 @@ $F_SECURES_ARRAY = array(
     $F_SECURING_SYSTEM,
     $F_SECURING_XPATH
 );
+
+
 // securing functions that work only when embedded in quotes
 $F_QUOTE_ANALYSIS = $F_SECURING_SQL;
 

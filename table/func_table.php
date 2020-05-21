@@ -13,7 +13,6 @@ class func_table{
     public $in_class; // bool
     public $class_name;
     public $namespace;
-
     public $func_params;
     public $func_params_count;
 

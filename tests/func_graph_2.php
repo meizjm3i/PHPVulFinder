@@ -3,13 +3,18 @@
 function a($s){
     $b = $s."...";
     $c = "ss";
-    die();
     $d = array($b,$c);
 }
 
 function b($ss){
     echo $ss;
-    system($ss);
+    $a = "asd";
+    $b = "dfg";
+    system($b);
+    $para = $_GET['w'];
+    $c = "ppp";
+    $cd = "qwe";
+    system($para);
     return "success";
 }
 
@@ -17,5 +22,6 @@ $t = "123";
 a($t);
 
 $d = "sss";
-$e = 123;
-$f = b("ls");
+$e = $_GET['p'];
+$f = b($e);
+

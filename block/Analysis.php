@@ -17,4 +17,23 @@
 
 Class Analysis{
 
+    public function analyze($graph){
+
+    }
+
+    public function multiBlockHandler(){
+
+    }
+    public function exec_analyse(){
+
+    }
+
+    public function code_analyse(){
+
+    }
+
+    public function file_analyse(){
+
+    }
+
 }

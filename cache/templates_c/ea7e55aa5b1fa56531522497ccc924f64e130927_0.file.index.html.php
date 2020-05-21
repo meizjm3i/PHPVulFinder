@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.33, created on 2019-10-29 10:17:13
+/* Smarty version 3.1.33, created on 2020-05-20 06:25:06
   from '/Users/meizj/Documents/timeline/gradutedesign/PHPVulFinder/views/index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.33',
-  'unifunc' => 'content_5db7a129c49631_09719532',
+  'unifunc' => 'content_5ec4b12279a522_08331316',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'ea7e55aa5b1fa56531522497ccc924f64e130927' => 
     array (
       0 => '/Users/meizj/Documents/timeline/gradutedesign/PHPVulFinder/views/index.html',
-      1 => 1572315203,
+      1 => 1589948437,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_5db7a129c49631_09719532 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5ec4b12279a522_08331316 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -38,7 +38,19 @@ function content_5db7a129c49631_09719532 (Smarty_Internal_Template $_smarty_tpl)
     <?php echo '<script'; ?>
  src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"><?php echo '</script'; ?>
 >
-    <title>Document</title>
+    <?php echo '<script'; ?>
+ src="https://code.highcharts.com/highcharts.js"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://code.highcharts.com/modules/exporting.js"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://code.highcharts.com/modules/export-data.js"><?php echo '</script'; ?>
+>
+    <?php echo '<script'; ?>
+ src="https://code.highcharts.com/modules/accessibility.js"><?php echo '</script'; ?>
+>
+    <title>PHPVulFinder</title>
 </head>
 <body style="background-color: #B3C0D1">
 
@@ -54,16 +66,16 @@ function content_5db7a129c49631_09719532 (Smarty_Internal_Template $_smarty_tpl)
             <input  id="pathData" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" />
             <!--<button id="pathSubmit" type="button" class="btn btn-secondary" onclick="submit()">Submit</button>-->
             <br/>
-
-
             <button id="pathSubmit" onclick="submit()" class="btn btn-primary btn-lg " type="submit">Button</button>
 
     </div>
 
-    <div class="row align-items-end ">
-        <div class="col" id="result">
-            result
-        </div>
+
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+    </figure>
+
+    <div id="result">
     </div>
 
 </div>
@@ -77,6 +89,7 @@ function content_5db7a129c49631_09719532 (Smarty_Internal_Template $_smarty_tpl)
 >
 
     function submit() {
+        chartHtml = "";
 
         formData = document.getElementById("pathData").value;
 
@@ -87,7 +100,22 @@ function content_5db7a129c49631_09719532 (Smarty_Internal_Template $_smarty_tpl)
                 'path':formData
             }
         }).done(function(result){
-            document.getElementById("result").innerHTML = result;
+            // document.getElementById("result").innerHTML = result;
+            console.log(result);
+            chart = result.split("------9ff9d6c39f612864ea4f5739be015be8------")[0];
+            code = result.split("------9ff9d6c39f612864ea4f5739be015be8------")[1];
+            console.log(chart);
+            console.log(code);
+            var myScript= document.createElement("script");
+            myScript.type = "text/javascript";
+            myScript.appendChild(document.createTextNode(chart));
+            document.body.appendChild(myScript);
+
+
+            $("#result").html(code);
+
+
+
         });
 
     }

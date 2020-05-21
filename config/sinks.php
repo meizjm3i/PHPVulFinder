@@ -1,11 +1,9 @@
 <?php
-require 'securing.php';
-//跨站脚本的危险函数
-//参数为0表示所有的参数都要进行分析
+
 $NAME_XSS = 'Cross-Site Scripting';
 $F_XSS = array(
     '__NAME__'						=> 'XSS',
-    'echo'							=> array(array(1), $F_SECURING_XSS),
+    'echo'							=> array(array(0), $F_SECURING_XSS),
     'print'							=> array(array(1), $F_SECURING_XSS),
     'print_r'						=> array(array(1), $F_SECURING_XSS),
     'exit'							=> array(array(1), $F_SECURING_XSS),
@@ -111,6 +109,7 @@ $F_FILE_INCLUDE = array(
     'set_include_path' 				=> array(array(1), $F_SECURING_FILE),
     'virtual' 						=> array(array(1), $F_SECURING_FILE)
 );
+
 // file affecting functions  => (parameters to scan, securing functions)
 // file handler functions like fopen() are added as parameter
 // for functions that use them like fread() and fwrite()
@@ -220,6 +219,7 @@ $F_FILE_AFFECT = array(
     'xdiff_file_rabdiff'			=> array(array(3), $F_SECURING_FILE),
     'yaml_emit_file'				=> array(array(1,2), $F_SECURING_FILE),
 );
+
 //系统命令执行函数  => (parameters to scan, securing functions)
 $NAME_EXEC = 'Command Execution';
 $F_EXEC = array(
@@ -238,6 +238,7 @@ $F_EXEC = array(
     'w32api_invoke_function'		=> array(array(1), array()),
     'w32api_register_function'		=> array(array(2), array()),
 );
+
 //SQL语句执行函数 => (parameters to scan, securing functions)
 $NAME_DATABASE = 'SQL Injection';
 $F_DATABASE = array(
@@ -306,6 +307,7 @@ $F_XPATH = array(
     'xpath_eval_expression'			=> array(array(2), $F_SECURING_XPATH),
     'xptr_eval'						=> array(array(2), $F_SECURING_XPATH)
 );
+
 //LDAP注入
 $NAME_LDAP = 'LDAP Injection';
 $F_LDAP = array(
@@ -316,6 +318,7 @@ $F_LDAP = array(
     'ldap_read'						=> array(array(3), $F_SECURING_LDAP),
     'ldap_search'					=> array(array(3), $F_SECURING_LDAP)
 );
+
 
 
 // property oriented programming with unserialize
@@ -339,6 +342,7 @@ $F_SINK_ALL = array_merge(
     $F_HTTP_HEADER,
     $F_POP
 ) ;
+
 $F_SINK_SERVER = array_merge(
     $F_LDAP,
     $F_XPATH,
@@ -350,10 +354,12 @@ $F_SINK_SERVER = array_merge(
     $F_CODE,
     $F_POP
 ) ;
+
 $F_SINK_CLIENT = array_merge(
     $F_XSS,
     $F_HTTP_HEADER
 ) ;
+
 $F_SINK_ARRAY = array(
     $F_XSS,
     $F_LDAP,
@@ -367,4 +373,5 @@ $F_SINK_ARRAY = array(
     $F_HTTP_HEADER,
     $F_POP
 );
+
 ?>

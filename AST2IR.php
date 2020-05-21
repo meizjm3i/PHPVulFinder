@@ -17,16 +17,14 @@ class AST2IR{
      * AST2IR : parse AST to futher IR , then IR to CFG
      */
 
-
     /*
      * parse AST to IR
      *
      * 1. Parse AST To Quad
      * 2. Generate Basic Block
      * 3. Generate Contorl Flow Graph
-     *
+     * 4. Data Flow Analyse
      */
-
     public $quadId ;
     public $quads;
     public $funcs;
@@ -34,30 +32,24 @@ class AST2IR{
     {
         $this->quadId = -1;
     }
-
     public function parse($nodes){
         if(!is_array($nodes)){
             $nodes = array($nodes);
         }
-
         $this->quadId += 1;
         $this->quads[$this->quadId] = new Quad(0,$this->quadId);
         $this->funcs = array();
         $this->build_classTable($nodes);
         $this->build_funcTable($nodes);
-//        print_r($nodes);
         $this->test($nodes);
         $flow_graph = new FlowGraphs();
         $flow_graph->BlockDivide($this->quads);
-        echo "****";
-        var_dump($this->quads);
         $this->quads = $flow_graph->optimize($this->quads);
-//        echo "****";
-//        var_dump($this->quads);
-        echo "****";
-        var_dump($flow_graph->graph);
-        return $this->quads;
-
+        $flow_graph->create_graph();
+        $flow_graph->extractVar();
+        $flow_graph->varTaintCheck();
+        $flow_graph->analyze();
+        return $flow_graph->sinks;
     }
     public function SimpleParse($nodes){
         if(!is_array($nodes)){
@@ -71,8 +63,6 @@ class AST2IR{
         $this->test($nodes);
         return $this->quads;
     }
-
-
     /*
      * 建立函数表
      * 在进行四元组生成时，暂时不生成用户自定义函数的四元组，等进行基本块划分再对自定义函数直接生成基本块
@@ -334,23 +324,86 @@ class AST2IR{
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,$expr->getType(),$expr->var,null,null);
         }
         if($expr instanceof PhpParser\Node\Expr\FuncCall){
-            $param_count = count($expr->args);
-            for($i=0;$i<$param_count;$i++){
-                $this->quadId += 1;
-                $this->quads[$this->quadId] = new Quad(0,$this->quadId,"PARAM_$i",null,null,$expr->args[$i]);
-            }
-            $this->quadId += 1;
-            $id = $this->quadId;
-            $this->quads[$this->quadId] = new Quad(1,$this->quadId,$expr->getType(),$expr->name,$param_count,null);
+            $defined_functions = get_defined_functions();
+            $internal_functions = $defined_functions["internal"];
+            /*
+             * 仅对用户自定义函数进行quad生成
+             * 内置函数不生成quad，依赖config中的参数设置来判断
+             */
 
-            if(!function_exists($expr->name)){
-                if(array_key_exists(md5($expr->name),$this->funcs)){
-                    $this->StmtParse($this->funcs[md5($expr->name)]->func_stmt);
+            if($expr->name instanceof PhpParser\Node\Name){
+                if(!in_array($expr->name->parts[0] ,$internal_functions)){
+                    $param_count = count($expr->args);
+                    $start_id = $this->quadId+1;
+                    for($i=0;$i<$param_count;$i++){
+                        $this->quadId += 1;
+                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,"PARAM_$i",null,null,$expr->args[$i]);
+                    }
+                    $this->quadId += 1;
+                    $id = $this->quadId;
+                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,$expr->getType(),$expr->name,$param_count,null);
+                    if(!function_exists($expr->name)){
+                        if(array_key_exists(md5($expr->name),$this->funcs)){
+                            $func_identifier = $this->quadId;
+                            $count = 0;
+                            $stmt = $this->funcs[md5($expr->name)]->func_params;
+    //                        var_dump($this->funcs[md5($expr->name)]->func_params);
+                            foreach ($stmt as $param){
+                                if($param instanceof PhpParser\Node\Param){
+                                    $count += 1;
+                                    $this->quadId += 1;
+                                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,$param->getType(),null,$func_identifier-$count,$param->var);
+    //                                var_dump($this->quads[$this->quadId]);
+                                }
+                            }
+
+                            $this->StmtParse($this->funcs[md5($expr->name)]->func_stmt);
+                        }
+                    }
+                    $this->quads[$id]->result = $this->quadId+1;
+                    $end_id = $this->quadId;
+                    $this->quadId += 1;
+                    /*
+                     * arg1 : 函数开始部分
+                     * arg2 : 函数结束部分
+                     */
+                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,"Expr_FuncCall_End",$start_id,$end_id,null);
+                }else{
+                    $param_count = count($expr->args);
+                    $start_id = $this->quadId+1;
+                    for($i=0;$i<$param_count;$i++){
+                        $this->quadId += 1;
+                        $this->quads[$this->quadId] = new Quad(0,$this->quadId,"PARAM_$i",null,null,$expr->args[$i]);
+                    }
+                    $this->quadId += 1;
+                    $id = $this->quadId;
+                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,$expr->getType()."_Internal",$expr->name,$param_count,null);
+                    $this->quads[$id]->result = $this->quadId+1;
+                    $end_id = $this->quadId;
+                    $this->quadId += 1;
+                    $this->quads[$this->quadId] = new Quad(1,$this->quadId,"Expr_FuncCall_Internal_End",$start_id,$end_id,null);
+
                 }
             }
-            $this->quads[$id]->result = $this->quadId+1;
-//            $this->quadId += 1;
-//            $this->quads[$this->quadId] = new Quad(1,$this->quadId,"FUNC_CALL_FINISHED",null,null,null);
+
+            if($expr->name instanceof PhpParser\Node\Expr\Variable){
+                $param_count = count($expr->args);
+                $start_id = $this->quadId+1;
+                for($i=0;$i<$param_count;$i++){
+                    $this->quadId += 1;
+                    $this->quads[$this->quadId] = new Quad(0,$this->quadId,"PARAM_$i",null,null,$expr->args[$i]);
+                }
+                $this->quadId += 1;
+                $id = $this->quadId;
+
+                $this->quads[$this->quadId] = new Quad(1,$this->quadId,$expr->getType(),$expr->name,$param_count,null);
+                $this->quads[$id]->result = $this->quadId+1;
+                $end_id = $this->quadId;
+                $this->quadId += 1;
+                $this->quads[$this->quadId] = new Quad(1,$this->quadId,"Expr_FuncCall_Var_End",$start_id,$end_id,null);
+            }
+
+
         }
         if($expr instanceof PhpParser\Node\Expr\ArrayDimFetch){
             $this->quadId += 1;
@@ -578,10 +631,13 @@ class AST2IR{
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(1,$this->quadId,$stmt->getType(),$now_id,null,"temp_$this->quadId");
         }
+        if($stmt instanceof PhpParser\Node\Stmt\While_){
+
+        }
+
     }
 
     public function ScalarParse($Scalar){
-        echo "****";
         if($Scalar instanceof PhpParser\Node\Scalar\String_){
             $this->quadId += 1;
             $this->quads[$this->quadId] = new Quad(0,$this->quadId,"Expr_Assign",null,$Scalar->value,"temp_$this->quadId");
@@ -605,8 +661,6 @@ class AST2IR{
             var_dump($debug);
         }
     }
-
-
 }
 
 
@@ -628,7 +682,6 @@ class Quad{
     public $result; // 结果
 
     public function __construct( $label = 0 ,$id,$op = null , $arg1 = null , $arg2 = null , $result = null){
-
         $this->label  = $label;
         $this->id     = $id;
         $this->op     = $op;
@@ -636,7 +689,6 @@ class Quad{
         $this->arg2   = $arg2;
         $this->result = $result;
     }
-
     /*
      * set_op : set operation
      * get_op : get operation
@@ -647,7 +699,6 @@ class Quad{
     public function get_op(){
         return $this->op;
     }
-
     /*
      * set_arg1 : set arg1
      * get_arg1 : get arg1
@@ -691,8 +742,3 @@ class Quad{
 
 
 }
-
-
-
-
-

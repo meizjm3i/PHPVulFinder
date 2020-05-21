@@ -9,7 +9,11 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
-    <title>Document</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <title>PHPVulFinder</title>
 </head>
 <body style="background-color: #B3C0D1">
 
@@ -25,16 +29,16 @@
             <input  id="pathData" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" />
             <!--<button id="pathSubmit" type="button" class="btn btn-secondary" onclick="submit()">Submit</button>-->
             <br/>
-
-
             <button id="pathSubmit" onclick="submit()" class="btn btn-primary btn-lg " type="submit">Button</button>
 
     </div>
 
-    <div class="row align-items-end ">
-        <div class="col" id="result">
-            result
-        </div>
+
+    <figure class="highcharts-figure">
+        <div id="container"></div>
+    </figure>
+
+    <div id="result">
     </div>
 
 </div>
@@ -45,6 +49,7 @@
 <script>
 
     function submit() {
+        chartHtml = "";
 
         formData = document.getElementById("pathData").value;
 
@@ -55,7 +60,22 @@
                 'path':formData
             }
         }).done(function(result){
-            document.getElementById("result").innerHTML = result;
+            // document.getElementById("result").innerHTML = result;
+            console.log(result);
+            chart = result.split("------9ff9d6c39f612864ea4f5739be015be8------")[0];
+            code = result.split("------9ff9d6c39f612864ea4f5739be015be8------")[1];
+            console.log(chart);
+            console.log(code);
+            var myScript= document.createElement("script");
+            myScript.type = "text/javascript";
+            myScript.appendChild(document.createTextNode(chart));
+            document.body.appendChild(myScript);
+
+
+            $("#result").html(code);
+
+
+
         });
 
     }

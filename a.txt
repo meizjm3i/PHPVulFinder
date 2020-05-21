@@ -1,1015 +1,580 @@
-********array(22) {
+****basic_id : 1<br>basic_id : 2<br>basic_id : 3<br>basic_id : 4<br>****123array(6) {
   [0]=>
-  object(Quad)#630 (6) {
-    ["label"]=>
+  object(CFGEdge)#660 (7) {
+    ["false"]=>
     int(0)
-    ["id"]=>
-    int(0)
-    ["op"]=>
-    NULL
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    NULL
-  }
-  [1]=>
-  object(Quad)#633 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
+    ["true"]=>
     int(1)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    object(PhpParser\Node\Scalar\String_)#604 (2) {
-      ["value"]=>
-      string(3) "123"
-      ["attributes":protected]=>
-      array(3) {
-        ["startLine"]=>
-        int(16)
-        ["endLine"]=>
-        int(16)
-        ["kind"]=>
-        int(2)
-      }
-    }
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#603 (2) {
-      ["name"]=>
-      string(1) "t"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(16)
-        ["endLine"]=>
-        int(16)
-      }
-    }
-  }
-  [2]=>
-  object(Quad)#634 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
+    ["normal"]=>
     int(2)
-    ["op"]=>
-    string(7) "PARAM_0"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    object(PhpParser\Node\Arg)#609 (4) {
-      ["value"]=>
-      object(PhpParser\Node\Expr\Variable)#608 (2) {
-        ["name"]=>
-        string(1) "t"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(17)
-          ["endLine"]=>
-          int(17)
-        }
-      }
-      ["byRef"]=>
-      bool(false)
-      ["unpack"]=>
-      bool(false)
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(17)
-        ["endLine"]=>
-        int(17)
-      }
-    }
-  }
-  [3]=>
-  object(Quad)#635 (6) {
-    ["label"]=>
-    int(1)
-    ["id"]=>
+    ["no_edge"]=>
     int(3)
-    ["op"]=>
-    string(13) "Expr_FuncCall"
-    ["arg1"]=>
-    object(PhpParser\Node\Name)#607 (2) {
-      ["parts"]=>
-      array(1) {
-        [0]=>
-        string(1) "a"
-      }
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(17)
-        ["endLine"]=>
-        int(17)
-      }
-    }
-    ["arg2"]=>
-    int(1)
-    ["result"]=>
-    int(12)
-  }
-  [4]=>
-  object(Quad)#636 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(4)
-    ["op"]=>
-    string(20) "Expr_BinaryOp_Concat"
-    ["arg1"]=>
-    object(PhpParser\Node\Expr\Variable)#570 (2) {
-      ["name"]=>
-      string(1) "s"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(4)
-        ["endLine"]=>
-        int(4)
-      }
-    }
-    ["arg2"]=>
-    object(PhpParser\Node\Scalar\String_)#571 (2) {
-      ["value"]=>
-      string(3) "..."
-      ["attributes":protected]=>
-      array(3) {
-        ["startLine"]=>
-        int(4)
-        ["endLine"]=>
-        int(4)
-        ["kind"]=>
-        int(2)
-      }
-    }
-    ["result"]=>
-    string(6) "temp_4"
-  }
-  [5]=>
-  object(Quad)#637 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(5)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    int(4)
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#569 (2) {
-      ["name"]=>
-      string(1) "b"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(4)
-        ["endLine"]=>
-        int(4)
-      }
-    }
-  }
-  [6]=>
-  object(Quad)#638 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(6)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    object(PhpParser\Node\Scalar\String_)#576 (2) {
-      ["value"]=>
-      string(2) "ss"
-      ["attributes":protected]=>
-      array(3) {
-        ["startLine"]=>
-        int(5)
-        ["endLine"]=>
-        int(5)
-        ["kind"]=>
-        int(2)
-      }
-    }
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#575 (2) {
-      ["name"]=>
-      string(1) "c"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(5)
-        ["endLine"]=>
-        int(5)
-      }
-    }
-  }
-  [7]=>
-  object(Quad)#639 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(7)
-    ["op"]=>
-    string(9) "Expr_Exit"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    NULL
-  }
-  [8]=>
-  object(Quad)#640 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(8)
-    ["op"]=>
-    string(14) "Expr_ArrayItem"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    object(PhpParser\Node\Expr\Variable)#582 (2) {
-      ["name"]=>
-      string(1) "b"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(7)
-        ["endLine"]=>
-        int(7)
-      }
-    }
-    ["result"]=>
-    string(13) "ARRAY_PARAM_8"
-  }
-  [9]=>
-  object(Quad)#641 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(9)
-    ["op"]=>
-    string(14) "Expr_ArrayItem"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    object(PhpParser\Node\Expr\Variable)#584 (2) {
-      ["name"]=>
-      string(1) "c"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(7)
-        ["endLine"]=>
-        int(7)
-      }
-    }
-    ["result"]=>
-    string(13) "ARRAY_PARAM_9"
-  }
-  [10]=>
-  object(Quad)#642 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(10)
-    ["op"]=>
-    string(14) "Expr_ArrayItem"
-    ["arg1"]=>
+    ["type"]=>
     int(2)
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    string(8) "ARRAY_10"
-  }
-  [11]=>
-  object(Quad)#643 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(11)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    int(10)
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#581 (2) {
-      ["name"]=>
-      string(1) "d"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(7)
-        ["endLine"]=>
-        int(7)
+    ["from"]=>
+    object(BasicBlock)#652 (3) {
+      ["inedge"]=>
+      object(Quad)#631 (6) {
+        ["label"]=>
+        int(0)
+        ["id"]=>
+        int(1)
+        ["op"]=>
+        string(11) "Expr_Assign"
+        ["arg1"]=>
+        NULL
+        ["arg2"]=>
+        object(PhpParser\Node\Scalar\String_)#602 (2) {
+          ["value"]=>
+          string(3) "123"
+          ["attributes":protected]=>
+          array(3) {
+            ["startLine"]=>
+            int(15)
+            ["endLine"]=>
+            int(15)
+            ["kind"]=>
+            int(2)
+          }
+        }
+        ["result"]=>
+        object(PhpParser\Node\Expr\Variable)#601 (2) {
+          ["name"]=>
+          string(1) "t"
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(15)
+            ["endLine"]=>
+            int(15)
+          }
+        }
       }
+      ["outedge"]=>
+      object(Quad)#633 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(3)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#605 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "a"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(16)
+            ["endLine"]=>
+            int(16)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(11)
+      }
+      ["entry"]=>
+      int(1)
     }
-  }
-  [12]=>
-  object(Quad)#644 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(12)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    object(PhpParser\Node\Scalar\String_)#613 (2) {
-      ["value"]=>
-      string(3) "sss"
-      ["attributes":protected]=>
-      array(3) {
-        ["startLine"]=>
-        int(19)
-        ["endLine"]=>
-        int(19)
-        ["kind"]=>
+    ["dest"]=>
+    object(BasicBlock)#653 (3) {
+      ["inedge"]=>
+      object(Quad)#633 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(3)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#605 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "a"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(16)
+            ["endLine"]=>
+            int(16)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(11)
+      }
+      ["outedge"]=>
+      object(Quad)#641 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(11)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
         int(2)
+        ["arg2"]=>
+        int(5)
+        ["result"]=>
+        NULL
       }
-    }
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#612 (2) {
-      ["name"]=>
-      string(1) "d"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(19)
-        ["endLine"]=>
-        int(19)
-      }
-    }
-  }
-  [13]=>
-  object(Quad)#645 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(13)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    object(PhpParser\Node\Scalar\LNumber)#617 (2) {
-      ["value"]=>
-      int(123)
-      ["attributes":protected]=>
-      array(3) {
-        ["startLine"]=>
-        int(20)
-        ["endLine"]=>
-        int(20)
-        ["kind"]=>
-        int(10)
-      }
-    }
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#616 (2) {
-      ["name"]=>
-      string(1) "e"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(20)
-        ["endLine"]=>
-        int(20)
-      }
-    }
-  }
-  [14]=>
-  object(Quad)#646 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(14)
-    ["op"]=>
-    string(7) "PARAM_0"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    object(PhpParser\Node\Arg)#623 (4) {
-      ["value"]=>
-      object(PhpParser\Node\Scalar\String_)#622 (2) {
-        ["value"]=>
-        string(2) "ls"
-        ["attributes":protected]=>
-        array(3) {
-          ["startLine"]=>
-          int(21)
-          ["endLine"]=>
-          int(21)
-          ["kind"]=>
-          int(2)
-        }
-      }
-      ["byRef"]=>
-      bool(false)
-      ["unpack"]=>
-      bool(false)
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(21)
-        ["endLine"]=>
-        int(21)
-      }
-    }
-  }
-  [15]=>
-  object(Quad)#647 (6) {
-    ["label"]=>
-    int(1)
-    ["id"]=>
-    int(15)
-    ["op"]=>
-    string(13) "Expr_FuncCall"
-    ["arg1"]=>
-    object(PhpParser\Node\Name)#621 (2) {
-      ["parts"]=>
-      array(1) {
-        [0]=>
-        string(1) "b"
-      }
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(21)
-        ["endLine"]=>
-        int(21)
-      }
-    }
-    ["arg2"]=>
-    int(1)
-    ["result"]=>
-    int(21)
-  }
-  [16]=>
-  object(Quad)#648 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(16)
-    ["op"]=>
-    string(9) "Stmt_Echo"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    array(1) {
-      [0]=>
-      object(PhpParser\Node\Expr\Variable)#593 (2) {
-        ["name"]=>
-        string(2) "ss"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(11)
-          ["endLine"]=>
-          int(11)
-        }
-      }
-    }
-    ["result"]=>
-    NULL
-  }
-  [17]=>
-  object(Quad)#649 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(17)
-    ["op"]=>
-    string(7) "PARAM_0"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    object(PhpParser\Node\Arg)#597 (4) {
-      ["value"]=>
-      object(PhpParser\Node\Expr\Variable)#596 (2) {
-        ["name"]=>
-        string(2) "ss"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(12)
-          ["endLine"]=>
-          int(12)
-        }
-      }
-      ["byRef"]=>
-      bool(false)
-      ["unpack"]=>
-      bool(false)
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(12)
-        ["endLine"]=>
-        int(12)
-      }
-    }
-  }
-  [18]=>
-  object(Quad)#650 (6) {
-    ["label"]=>
-    int(1)
-    ["id"]=>
-    int(18)
-    ["op"]=>
-    string(13) "Expr_FuncCall"
-    ["arg1"]=>
-    object(PhpParser\Node\Name)#595 (2) {
-      ["parts"]=>
-      array(1) {
-        [0]=>
-        string(6) "system"
-      }
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(12)
-        ["endLine"]=>
-        int(12)
-      }
-    }
-    ["arg2"]=>
-    int(1)
-    ["result"]=>
-    int(19)
-  }
-  [19]=>
-  object(Quad)#651 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(19)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    string(7) "success"
-    ["result"]=>
-    string(7) "temp_19"
-  }
-  [20]=>
-  object(Quad)#652 (6) {
-    ["label"]=>
-    int(1)
-    ["id"]=>
-    int(20)
-    ["op"]=>
-    string(11) "Stmt_Return"
-    ["arg1"]=>
-    int(19)
-    ["arg2"]=>
-    NULL
-    ["result"]=>
-    string(7) "temp_20"
-  }
-  [21]=>
-  object(Quad)#653 (6) {
-    ["label"]=>
-    int(0)
-    ["id"]=>
-    int(21)
-    ["op"]=>
-    string(11) "Expr_Assign"
-    ["arg1"]=>
-    NULL
-    ["arg2"]=>
-    int(20)
-    ["result"]=>
-    object(PhpParser\Node\Expr\Variable)#620 (2) {
-      ["name"]=>
-      string(1) "f"
-      ["attributes":protected]=>
-      array(2) {
-        ["startLine"]=>
-        int(21)
-        ["endLine"]=>
-        int(21)
-      }
-    }
-  }
-}
-**--****--******array(7) {
-  [0]=>
-  object(BasicBlock)#655 (3) {
-    ["inedge"]=>
-    object(Quad)#633 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(1)
-      ["op"]=>
-      string(11) "Expr_Assign"
-      ["arg1"]=>
+      ["entry"]=>
       NULL
-      ["arg2"]=>
-      object(PhpParser\Node\Scalar\String_)#604 (2) {
-        ["value"]=>
-        string(3) "123"
-        ["attributes":protected]=>
-        array(3) {
-          ["startLine"]=>
-          int(16)
-          ["endLine"]=>
-          int(16)
-          ["kind"]=>
-          int(2)
-        }
-      }
-      ["result"]=>
-      object(PhpParser\Node\Expr\Variable)#603 (2) {
-        ["name"]=>
-        string(1) "t"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(16)
-          ["endLine"]=>
-          int(16)
-        }
-      }
     }
-    ["outedge"]=>
-    object(Quad)#635 (6) {
-      ["label"]=>
-      int(1)
-      ["id"]=>
-      int(3)
-      ["op"]=>
-      string(13) "Expr_FuncCall"
-      ["arg1"]=>
-      object(PhpParser\Node\Name)#607 (2) {
-        ["parts"]=>
-        array(1) {
-          [0]=>
-          string(1) "a"
-        }
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(17)
-          ["endLine"]=>
-          int(17)
-        }
-      }
-      ["arg2"]=>
-      int(1)
-      ["result"]=>
-      int(12)
-    }
-    ["entry"]=>
-    int(1)
   }
   [1]=>
-  object(BasicBlock)#656 (3) {
-    ["inedge"]=>
-    object(Quad)#636 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(4)
-      ["op"]=>
-      string(20) "Expr_BinaryOp_Concat"
-      ["arg1"]=>
-      object(PhpParser\Node\Expr\Variable)#570 (2) {
-        ["name"]=>
-        string(1) "s"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(4)
-          ["endLine"]=>
-          int(4)
+  object(CFGEdge)#661 (7) {
+    ["false"]=>
+    int(0)
+    ["true"]=>
+    int(1)
+    ["normal"]=>
+    int(2)
+    ["no_edge"]=>
+    int(3)
+    ["type"]=>
+    NULL
+    ["from"]=>
+    object(BasicBlock)#653 (3) {
+      ["inedge"]=>
+      object(Quad)#633 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(3)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#605 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "a"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(16)
+            ["endLine"]=>
+            int(16)
+          }
         }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(11)
       }
-      ["arg2"]=>
-      object(PhpParser\Node\Scalar\String_)#571 (2) {
-        ["value"]=>
-        string(3) "..."
-        ["attributes":protected]=>
-        array(3) {
-          ["startLine"]=>
-          int(4)
-          ["endLine"]=>
-          int(4)
-          ["kind"]=>
-          int(2)
-        }
+      ["outedge"]=>
+      object(Quad)#641 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(11)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(2)
+        ["arg2"]=>
+        int(5)
+        ["result"]=>
+        NULL
       }
-      ["result"]=>
-      string(6) "temp_4"
-    }
-    ["outedge"]=>
-    object(Quad)#645 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(13)
-      ["op"]=>
-      string(11) "Expr_Assign"
-      ["arg1"]=>
+      ["entry"]=>
       NULL
-      ["arg2"]=>
-      object(PhpParser\Node\Scalar\LNumber)#617 (2) {
-        ["value"]=>
-        int(123)
-        ["attributes":protected]=>
-        array(3) {
-          ["startLine"]=>
-          int(20)
-          ["endLine"]=>
-          int(20)
-          ["kind"]=>
-          int(10)
-        }
-      }
-      ["result"]=>
-      object(PhpParser\Node\Expr\Variable)#616 (2) {
-        ["name"]=>
-        string(1) "e"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(20)
-          ["endLine"]=>
-          int(20)
-        }
-      }
     }
-    ["entry"]=>
+    ["dest"]=>
     NULL
   }
   [2]=>
-  object(BasicBlock)#657 (3) {
-    ["inedge"]=>
-    object(Quad)#644 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(12)
-      ["op"]=>
-      string(11) "Expr_Assign"
-      ["arg1"]=>
-      NULL
-      ["arg2"]=>
-      object(PhpParser\Node\Scalar\String_)#613 (2) {
-        ["value"]=>
-        string(3) "sss"
-        ["attributes":protected]=>
-        array(3) {
-          ["startLine"]=>
-          int(19)
-          ["endLine"]=>
-          int(19)
-          ["kind"]=>
-          int(2)
-        }
-      }
-      ["result"]=>
-      object(PhpParser\Node\Expr\Variable)#612 (2) {
-        ["name"]=>
-        string(1) "d"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(19)
-          ["endLine"]=>
-          int(19)
-        }
-      }
-    }
-    ["outedge"]=>
-    object(Quad)#647 (6) {
-      ["label"]=>
-      int(1)
-      ["id"]=>
-      int(15)
-      ["op"]=>
-      string(13) "Expr_FuncCall"
-      ["arg1"]=>
-      object(PhpParser\Node\Name)#621 (2) {
-        ["parts"]=>
-        array(1) {
-          [0]=>
-          string(1) "b"
-        }
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(21)
-          ["endLine"]=>
-          int(21)
-        }
-      }
-      ["arg2"]=>
-      int(1)
-      ["result"]=>
-      int(21)
-    }
-    ["entry"]=>
+  object(CFGEdge)#662 (7) {
+    ["false"]=>
+    int(0)
+    ["true"]=>
+    int(1)
+    ["normal"]=>
+    int(2)
+    ["no_edge"]=>
+    int(3)
+    ["type"]=>
     NULL
+    ["from"]=>
+    object(BasicBlock)#653 (3) {
+      ["inedge"]=>
+      object(Quad)#633 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(3)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#605 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "a"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(16)
+            ["endLine"]=>
+            int(16)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(11)
+      }
+      ["outedge"]=>
+      object(Quad)#641 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(11)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(2)
+        ["arg2"]=>
+        int(5)
+        ["result"]=>
+        NULL
+      }
+      ["entry"]=>
+      NULL
+    }
+    ["dest"]=>
+    object(BasicBlock)#654 (3) {
+      ["inedge"]=>
+      object(Quad)#641 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(11)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(2)
+        ["arg2"]=>
+        int(5)
+        ["result"]=>
+        NULL
+      }
+      ["outedge"]=>
+      object(Quad)#645 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(15)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#619 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "b"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(20)
+            ["endLine"]=>
+            int(20)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(19)
+      }
+      ["entry"]=>
+      NULL
+    }
   }
   [3]=>
-  object(BasicBlock)#658 (3) {
-    ["inedge"]=>
-    object(Quad)#648 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(16)
-      ["op"]=>
-      string(9) "Stmt_Echo"
-      ["arg1"]=>
-      NULL
-      ["arg2"]=>
-      array(1) {
-        [0]=>
-        object(PhpParser\Node\Expr\Variable)#593 (2) {
-          ["name"]=>
-          string(2) "ss"
-          ["attributes":protected]=>
-          array(2) {
-            ["startLine"]=>
-            int(11)
-            ["endLine"]=>
-            int(11)
-          }
-        }
-      }
-      ["result"]=>
-      NULL
-    }
-    ["outedge"]=>
-    object(Quad)#648 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(16)
-      ["op"]=>
-      string(9) "Stmt_Echo"
-      ["arg1"]=>
-      NULL
-      ["arg2"]=>
-      array(1) {
-        [0]=>
-        object(PhpParser\Node\Expr\Variable)#593 (2) {
-          ["name"]=>
-          string(2) "ss"
-          ["attributes":protected]=>
-          array(2) {
-            ["startLine"]=>
-            int(11)
-            ["endLine"]=>
-            int(11)
-          }
-        }
-      }
-      ["result"]=>
-      NULL
-    }
-    ["entry"]=>
+  object(CFGEdge)#663 (7) {
+    ["false"]=>
+    int(0)
+    ["true"]=>
+    int(1)
+    ["normal"]=>
+    int(2)
+    ["no_edge"]=>
+    int(3)
+    ["type"]=>
     NULL
+    ["from"]=>
+    object(BasicBlock)#654 (3) {
+      ["inedge"]=>
+      object(Quad)#641 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(11)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(2)
+        ["arg2"]=>
+        int(5)
+        ["result"]=>
+        NULL
+      }
+      ["outedge"]=>
+      object(Quad)#645 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(15)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#619 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "b"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(20)
+            ["endLine"]=>
+            int(20)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(19)
+      }
+      ["entry"]=>
+      NULL
+    }
+    ["dest"]=>
+    object(BasicBlock)#655 (3) {
+      ["inedge"]=>
+      object(Quad)#645 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(15)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#619 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "b"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(20)
+            ["endLine"]=>
+            int(20)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(19)
+      }
+      ["outedge"]=>
+      object(Quad)#649 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(19)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(14)
+        ["arg2"]=>
+        int(18)
+        ["result"]=>
+        NULL
+      }
+      ["entry"]=>
+      NULL
+    }
   }
   [4]=>
-  object(BasicBlock)#659 (3) {
-    ["inedge"]=>
-    object(Quad)#653 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(21)
-      ["op"]=>
-      string(11) "Expr_Assign"
-      ["arg1"]=>
-      NULL
-      ["arg2"]=>
-      int(20)
-      ["result"]=>
-      object(PhpParser\Node\Expr\Variable)#620 (2) {
-        ["name"]=>
-        string(1) "f"
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(21)
-          ["endLine"]=>
-          int(21)
-        }
-      }
-    }
-    ["outedge"]=>
-    object(Quad)#650 (6) {
-      ["label"]=>
-      int(1)
-      ["id"]=>
-      int(18)
-      ["op"]=>
-      string(13) "Expr_FuncCall"
-      ["arg1"]=>
-      object(PhpParser\Node\Name)#595 (2) {
-        ["parts"]=>
-        array(1) {
-          [0]=>
-          string(6) "system"
-        }
-        ["attributes":protected]=>
-        array(2) {
-          ["startLine"]=>
-          int(12)
-          ["endLine"]=>
-          int(12)
-        }
-      }
-      ["arg2"]=>
-      int(1)
-      ["result"]=>
-      int(19)
-    }
-    ["entry"]=>
+  object(CFGEdge)#664 (7) {
+    ["false"]=>
+    int(0)
+    ["true"]=>
+    int(1)
+    ["normal"]=>
+    int(2)
+    ["no_edge"]=>
+    int(3)
+    ["type"]=>
     NULL
+    ["from"]=>
+    object(BasicBlock)#655 (3) {
+      ["inedge"]=>
+      object(Quad)#645 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(15)
+        ["op"]=>
+        string(13) "Expr_FuncCall"
+        ["arg1"]=>
+        object(PhpParser\Node\Name)#619 (2) {
+          ["parts"]=>
+          array(1) {
+            [0]=>
+            string(1) "b"
+          }
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(20)
+            ["endLine"]=>
+            int(20)
+          }
+        }
+        ["arg2"]=>
+        int(1)
+        ["result"]=>
+        int(19)
+      }
+      ["outedge"]=>
+      object(Quad)#649 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(19)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(14)
+        ["arg2"]=>
+        int(18)
+        ["result"]=>
+        NULL
+      }
+      ["entry"]=>
+      NULL
+    }
+    ["dest"]=>
+    object(BasicBlock)#656 (3) {
+      ["inedge"]=>
+      object(Quad)#649 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(19)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(14)
+        ["arg2"]=>
+        int(18)
+        ["result"]=>
+        NULL
+      }
+      ["outedge"]=>
+      object(Quad)#650 (6) {
+        ["label"]=>
+        int(0)
+        ["id"]=>
+        int(20)
+        ["op"]=>
+        string(11) "Expr_Assign"
+        ["arg1"]=>
+        NULL
+        ["arg2"]=>
+        int(19)
+        ["result"]=>
+        object(PhpParser\Node\Expr\Variable)#618 (2) {
+          ["name"]=>
+          string(1) "f"
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(20)
+            ["endLine"]=>
+            int(20)
+          }
+        }
+      }
+      ["entry"]=>
+      NULL
+    }
   }
   [5]=>
-  object(BasicBlock)#660 (3) {
-    ["inedge"]=>
-    object(Quad)#651 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(19)
-      ["op"]=>
-      string(11) "Expr_Assign"
-      ["arg1"]=>
-      NULL
-      ["arg2"]=>
-      string(7) "success"
-      ["result"]=>
-      string(7) "temp_19"
-    }
-    ["outedge"]=>
-    object(Quad)#652 (6) {
-      ["label"]=>
-      int(1)
-      ["id"]=>
-      int(20)
-      ["op"]=>
-      string(11) "Stmt_Return"
-      ["arg1"]=>
-      int(5)
-      ["arg2"]=>
-      NULL
-      ["result"]=>
-      string(7) "temp_20"
-    }
-    ["entry"]=>
+  object(CFGEdge)#665 (7) {
+    ["false"]=>
+    int(0)
+    ["true"]=>
+    int(1)
+    ["normal"]=>
+    int(2)
+    ["no_edge"]=>
+    int(3)
+    ["type"]=>
     NULL
-  }
-  [6]=>
-  object(BasicBlock)#661 (3) {
-    ["inedge"]=>
-    object(Quad)#651 (6) {
-      ["label"]=>
-      int(0)
-      ["id"]=>
-      int(19)
-      ["op"]=>
-      string(11) "Expr_Assign"
-      ["arg1"]=>
+    ["from"]=>
+    object(BasicBlock)#656 (3) {
+      ["inedge"]=>
+      object(Quad)#649 (6) {
+        ["label"]=>
+        int(1)
+        ["id"]=>
+        int(19)
+        ["op"]=>
+        string(17) "Expr_FuncCall_End"
+        ["arg1"]=>
+        int(14)
+        ["arg2"]=>
+        int(18)
+        ["result"]=>
+        NULL
+      }
+      ["outedge"]=>
+      object(Quad)#650 (6) {
+        ["label"]=>
+        int(0)
+        ["id"]=>
+        int(20)
+        ["op"]=>
+        string(11) "Expr_Assign"
+        ["arg1"]=>
+        NULL
+        ["arg2"]=>
+        int(19)
+        ["result"]=>
+        object(PhpParser\Node\Expr\Variable)#618 (2) {
+          ["name"]=>
+          string(1) "f"
+          ["attributes":protected]=>
+          array(2) {
+            ["startLine"]=>
+            int(20)
+            ["endLine"]=>
+            int(20)
+          }
+        }
+      }
+      ["entry"]=>
       NULL
-      ["arg2"]=>
-      string(7) "success"
-      ["result"]=>
-      string(7) "temp_19"
     }
-    ["outedge"]=>
-    string(4) "out!"
-    ["entry"]=>
+    ["dest"]=>
     NULL
   }
 }

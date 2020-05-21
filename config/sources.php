@@ -65,8 +65,6 @@ class Sources
 				) ;
 	}
 
-
-
 	//文件内容当做输入
 	public static $F_FILE_INPUT = array(
 		'bzread',
